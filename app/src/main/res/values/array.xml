@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="xposed_scope">
+        <!--这里是填入需要自动勾选的应用的包名，多个就是多个item-->
+        <item>org.telegram.messenger</item>
+        <item>org.telegram.messenger.web</item>
+        <item>org.telegram.messenger.beta</item>
+        <item>org.telegram.plus</item>
+        <item>xyz.nextalone.nagram</item>
+        <item>xyz.nextalone.nnngram</item>
+        <item>nekox.messenger</item>
+        <item>tw.nekomimi.nekogram</item>
+        <item>com.cool2645.nekolite</item>
+        <item>com.exteragram.messenger</item>
+        <item>org.forkgram.messenger</item>
+        <item>org.forkclient.messenger.beta</item>
+    </string-array>
+</resources>
