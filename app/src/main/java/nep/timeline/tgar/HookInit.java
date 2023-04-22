@@ -72,8 +72,8 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                         Class<?> TL_updateDeleteMessages;
                         if (lpparam.packageName.equals("tw.nekomimi.nekogram"))
                         {
-                            TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("O91");
-                            TL_updateDeleteMessages = lpparam.classLoader.loadClass("P91");
+                            TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("x81");
+                            TL_updateDeleteMessages = lpparam.classLoader.loadClass("y81");
                         }
                         else
                         {
