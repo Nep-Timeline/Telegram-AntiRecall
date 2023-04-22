@@ -24,7 +24,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             "tw.nekomimi.nekogram",
             "com.cool2645.nekolite",
             "com.exteragram.messenger",
-            "org.forkgram.messenger",
+            "org.forkclient.messenger",
             "org.forkclient.messenger.beta");
     private static String MODULE_PATH = null;
 
