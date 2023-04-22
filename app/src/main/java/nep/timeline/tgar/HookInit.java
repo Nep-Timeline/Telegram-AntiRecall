@@ -53,10 +53,8 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             List<String> methodNames = new ArrayList<>();
 
             for (Method method : messagesControllerMethods)
-            {
                 if (method.getParameterCount() == 5 && method.getParameterTypes()[0] == ArrayList.class && method.getParameterTypes()[1] == ArrayList.class && method.getParameterTypes()[2] == ArrayList.class && method.getParameterTypes()[3] == boolean.class && method.getParameterTypes()[4] == int.class)
                     methodNames.add(method.getName());
-            }
 
             if (methodNames.size() != 1)
                 XposedBridge.log("[TGAR] Failed to hook anti-recall! reason: " + (methodNames.isEmpty() ? "No method found" : "Multiple methods found") + ", your telegram may have been modified!");
@@ -80,17 +78,19 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                             TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages");
                             TL_updateDeleteMessages = lpparam.classLoader.loadClass("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages");
                         }
-                        ArrayList<Object> newUpdates = new ArrayList<>();
-                        for (Object item : castList(param.args[0], Object.class)) {
-                            if (!item.getClass().equals(TL_updateDeleteChannelMessages) && !item.getClass().equals(TL_updateDeleteMessages))
-                                newUpdates.add(item);
-                            else
-                                XposedBridge.log("[TGAR] Protected message! event: " + item.getClass());
+                        ArrayList<Object> updates = castList(param.args[0], Object.class);
+                        if (updates != null && !updates.isEmpty())
+                        {
+                            ArrayList<Object> newUpdates = new ArrayList<>();
+
+                            for (Object item : updates)
+                                if (!item.getClass().equals(TL_updateDeleteChannelMessages) && !item.getClass().equals(TL_updateDeleteMessages))
+                                    newUpdates.add(item);
+                                else
+                                    XposedBridge.log("[TGAR] Protected message! event: " + item.getClass());
+
+                            param.args[0] = newUpdates;
                         }
-                        newUpdates.forEach(i -> {
-                            XposedBridge.log("[TGAR DEBUG] Event List: " + i.getClass());
-                        });
-                        param.args[0] = newUpdates;
                     }
                 });
             }
