@@ -80,16 +80,18 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                             TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages");
                             TL_updateDeleteMessages = lpparam.classLoader.loadClass("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages");
                         }
-                        ArrayList<Object> messgeArr = (ArrayList<Object>) param.args[0];
-                        ArrayList<Object> newMessgeArr = new ArrayList<>();
-                        for (Object item : messgeArr) {
-                            if (!item.getClass().equals(TL_updateDeleteChannelMessages) && !item.getClass().equals(TL_updateDeleteMessages)) {
-                                newMessgeArr.add(item);
-                            } else {
+                        Object updatesObject = param.args[0];
+                        ArrayList<Object> newUpdates = new ArrayList<>();
+                        for (Object item : castList(updatesObject, Object.class)) {
+                            if (!item.getClass().equals(TL_updateDeleteChannelMessages) && !item.getClass().equals(TL_updateDeleteMessages))
+                                newUpdates.add(item);
+                            else
                                 XposedBridge.log("[TGAR] Protected message! event: " + item.getClass());
-                            }
                         }
-                        param.args[0] = newMessgeArr;
+                        newUpdates.forEach(i -> {
+                            XposedBridge.log("[TGAR DEBUG] Event List: " + i.getClass());
+                        });
+                        param.args[0] = newUpdates;
                     }
                 });
             }
@@ -97,5 +99,17 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             // Fake Premium
             // XposedHelpers.findAndHookMethod("org.telegram.messenger.UserConfig", lpparam.classLoader, "isPremium", XC_MethodReplacement.returnConstant(true));
         }
+    }
+
+    public static <T> ArrayList<T> castList(Object obj, Class<T> clazz)
+    {
+        ArrayList<T> result = new ArrayList<>();
+        if(obj instanceof ArrayList<?>)
+        {
+            for (Object o : (ArrayList<?>) obj)
+                result.add(clazz.cast(o));
+            return result;
+        }
+        return null;
     }
 }
