@@ -21,7 +21,6 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
     private static final List<String> hookPackages = Arrays.asList("org.telegram.messenger", "org.telegram.messenger.web", "org.telegram.messenger.beta", "org.telegram.plus",
             "xyz.nextalone.nagram",
-            "top.qwq2333.nullgram",
             "xyz.nextalone.nnngram",
             "nekox.messenger",
             "tw.nekomimi.nekogram",
