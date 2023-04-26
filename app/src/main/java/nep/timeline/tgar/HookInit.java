@@ -1,7 +1,6 @@
 package nep.timeline.tgar;
 
 import android.content.res.XModuleResources;
-import android.text.SpannableStringBuilder;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
@@ -76,8 +74,10 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                             Class<?> TL_updateDeleteMessages;
                             if (lpparam.packageName.equals("tw.nekomimi.nekogram"))
                             {
-                                TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("x81");
-                                TL_updateDeleteMessages = lpparam.classLoader.loadClass("y81");
+                                //TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("x81");
+                                //TL_updateDeleteMessages = lpparam.classLoader.loadClass("y81");
+                                TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("qa1");
+                                TL_updateDeleteMessages = lpparam.classLoader.loadClass("ra1");
                             }
                             else
                             {
@@ -97,9 +97,9 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                                         XposedBridge.log("[TGAR] Protected message! event: " + item.getClass());
                                     }
 
-                                //newUpdates.forEach(i -> {
-                                //    XposedBridge.log("[TGAR DEBUG] Event List: " + i.getClass());
-                                //});
+                                newUpdates.forEach(i -> {
+                                    XposedBridge.log("[TGAR DEBUG] Event List: " + i.getClass());
+                                });
                                 param.args[0] = newUpdates;
                             }
                         }
