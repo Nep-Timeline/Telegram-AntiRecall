@@ -76,8 +76,12 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                             {
                                 //TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("x81");
                                 //TL_updateDeleteMessages = lpparam.classLoader.loadClass("y81");
-                                TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("qa1");
-                                TL_updateDeleteMessages = lpparam.classLoader.loadClass("ra1");
+
+                                //TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("qa1");
+                                //TL_updateDeleteMessages = lpparam.classLoader.loadClass("ra1");
+
+                                TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("sa1");
+                                TL_updateDeleteMessages = lpparam.classLoader.loadClass("ta1");
                             }
                             else
                             {
@@ -97,9 +101,6 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                                         XposedBridge.log("[TGAR] Protected message! event: " + item.getClass());
                                     }
 
-                                newUpdates.forEach(i -> {
-                                    XposedBridge.log("[TGAR DEBUG] Event List: " + i.getClass());
-                                });
                                 param.args[0] = newUpdates;
                             }
                         }
