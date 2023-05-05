@@ -80,8 +80,11 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                                 //TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("qa1");
                                 //TL_updateDeleteMessages = lpparam.classLoader.loadClass("ra1");
 
-                                TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("sa1");
-                                TL_updateDeleteMessages = lpparam.classLoader.loadClass("ta1");
+                                //TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("sa1");
+                                //TL_updateDeleteMessages = lpparam.classLoader.loadClass("ta1");
+
+                                TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("Fa1");
+                                TL_updateDeleteMessages = lpparam.classLoader.loadClass("Ga1");
                             }
                             else
                             {
