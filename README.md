@@ -6,7 +6,7 @@ anti recall xposed module for telegram app
 ### Which telegram client are supported?
 Official, Plus Messenger, Nagram, Nnngram, NekoX, Nekogram (No Test Apk), NekoLite, Exteragram, Forkgram
 
-## Which telegram client will not be supported?
+### Which telegram client will not be supported?
 Nullgram
 
 ### What if the client i am using is not supported?
