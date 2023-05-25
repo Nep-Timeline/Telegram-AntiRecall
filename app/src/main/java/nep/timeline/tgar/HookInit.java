@@ -11,6 +11,7 @@ import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
@@ -18,16 +19,23 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
     private static final List<String> hookPackages = Arrays.asList("org.telegram.messenger", "org.telegram.messenger.web", "org.telegram.messenger.beta", "org.telegram.plus",
-            "xyz.nextalone.nagram",
-            "xyz.nextalone.nnngram",
-            "nekox.messenger",
             "tw.nekomimi.nekogram",
             "com.cool2645.nekolite",
             "com.exteragram.messenger",
             "org.forkclient.messenger",
-            "org.forkclient.messenger.beta",
-            "top.qwq2333.nullgram");
+            "org.forkclient.messenger.beta");
+    private static final List<String> hookPackagesCustomization = Arrays.asList("xyz.nextalone.nagram",
+            "xyz.nextalone.nnngram",
+            "top.qwq2333.nullgram",
+            "nekox.messenger");
     private static String MODULE_PATH = null;
+    private static final String issue = "Your telegram may have been modified! You can submit issue to let developer to try support to the telegram client you are using.";
+    private static final boolean DEBUG_MODE = false;
+    private static final boolean ONLY_ANTIRECALL = false;
+
+    static {
+        hookPackages.addAll(hookPackagesCustomization);
+    }
 
     @Override
     public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) throws Throwable {
@@ -42,14 +50,30 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
         XModuleResources.createInstance(MODULE_PATH, resparam.res);
     }
 
+    private boolean onlyNeedAR(final XC_LoadPackage.LoadPackageParam lppara)
+    {
+        return hookPackagesCustomization.contains(lppara.packageName);
+    }
+
+    private boolean isNekogram(final XC_LoadPackage.LoadPackageParam lpparam)
+    {
+        return lpparam.packageName.equals("tw.nekomimi.nekogram");
+    }
+
+    private boolean isNullgram(final XC_LoadPackage.LoadPackageParam lpparam)
+    {
+        return lpparam.packageName.equals("top.qwq2333.nullgram");
+    }
+
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         if (hookPackages.contains(lpparam.packageName)) {
-            XposedBridge.log("[TGAR] Trying to hook app: " + lpparam.packageName);
+            if (DEBUG_MODE)
+                XposedBridge.log("[TGAR] Trying to hook app: " + lpparam.packageName);
 
             String messagesControllerPath = "org.telegram.messenger.MessagesController";
-            if (lpparam.packageName.equals("top.qwq2333.nullgram"))
-                messagesControllerPath = "kK0";
+            if (isNullgram(lpparam))
+                messagesControllerPath = ObfuscateHelper.resolveNullgramClass(messagesControllerPath);
 
             Class<?> messagesController = XposedHelpers.findClassIfExists(messagesControllerPath, lpparam.classLoader);
 
@@ -57,67 +81,94 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             {
                 Method[] messagesControllerMethods = messagesController.getDeclaredMethods();
 
-                List<String> methodNames = new ArrayList<>();
-
-                for (Method method : messagesControllerMethods)
-                    if (method.getParameterCount() == 5 && method.getParameterTypes()[0] == ArrayList.class && method.getParameterTypes()[1] == ArrayList.class && method.getParameterTypes()[2] == ArrayList.class && method.getParameterTypes()[3] == boolean.class && method.getParameterTypes()[4] == int.class)
-                        methodNames.add(method.getName());
-
-                if (methodNames.size() != 1)
-                    XposedBridge.log("[TGAR] Failed to hook anti-recall! reason: " + (methodNames.isEmpty() ? "No method found" : "Multiple methods found") + ", your telegram may have been modified!");
-                else
+                // Anti Recall
                 {
-                    String methodName = methodNames.get(0);
-                    XposedBridge.log("[TGAR] Trying to hook " + methodName);
+                    List<String> methodNames = new ArrayList<>();
+
+                    for (Method method : messagesControllerMethods)
+                        if (method.getParameterCount() == 5 && method.getParameterTypes()[0] == ArrayList.class && method.getParameterTypes()[1] == ArrayList.class && method.getParameterTypes()[2] == ArrayList.class && method.getParameterTypes()[3] == boolean.class && method.getParameterTypes()[4] == int.class)
+                            methodNames.add(method.getName());
+
+                    if (methodNames.size() != 1)
+                        XposedBridge.log("[TGAR Error] Failed to hook processUpdateArray! Reason: " + (methodNames.isEmpty() ? "No method found" : "Multiple methods found") + ", " + issue);
+                    else
+                    {
+                        String methodName = methodNames.get(0);
+
+                        XposedHelpers.findAndHookMethod(messagesController, methodName, ArrayList.class, ArrayList.class, ArrayList.class, boolean.class, int.class, new XC_MethodHook() {
+                            @Override
+                            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                                String TL_updateDeleteMessagesPath = "org.telegram.tgnet.TLRPC$TL_updateDeleteMessages";
+                                String TL_updateDeleteChannelMessagesPath = "org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages";
+                                if (isNekogram(lpparam))
+                                {
+                                    TL_updateDeleteMessagesPath = ObfuscateHelper.resolveNekogramClass(TL_updateDeleteMessagesPath);
+                                    TL_updateDeleteChannelMessagesPath = ObfuscateHelper.resolveNekogramClass(TL_updateDeleteChannelMessagesPath);
+                                }
+                                Class<?> TL_updateDeleteMessages = lpparam.classLoader.loadClass(TL_updateDeleteMessagesPath);
+                                Class<?> TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass(TL_updateDeleteChannelMessagesPath);
+                                ArrayList<Object> updates = castList(param.args[0], Object.class);
+                                if (updates != null && !updates.isEmpty())
+                                {
+                                    ArrayList<Object> newUpdates = new ArrayList<>();
+
+                                    for (Object item : updates)
+                                        if (!item.getClass().equals(TL_updateDeleteChannelMessages) && !item.getClass().equals(TL_updateDeleteMessages))
+                                            newUpdates.add(item);
+                                        else if (DEBUG_MODE)
+                                            XposedBridge.log("[TGAR] Protected message! event: " + item.getClass());
+
+                                    if (DEBUG_MODE)
+                                        newUpdates.forEach(i -> XposedBridge.log("[TGAR Debug] Event List: " + i.getClass())); // Use to get obfuscated event names from Nekogram
+                                    param.args[0] = newUpdates;
+                                }
+                            }
+                        });
+                    }
+                }
+
+                if (!onlyNeedAR(lpparam) && !ONLY_ANTIRECALL)
+                {
                     // No Sponsored Messages
-                    // XposedHelpers.findAndHookMethod(messagesController, "getSponsoredMessages", long.class, XC_MethodReplacement.returnConstant(null));
-                    // Anti Recall
-                    XposedHelpers.findAndHookMethod(messagesController, methodName, ArrayList.class, ArrayList.class, ArrayList.class, boolean.class, int.class, new XC_MethodHook() {
-                        @Override
-                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                            Class<?> TL_updateDeleteChannelMessages;
-                            Class<?> TL_updateDeleteMessages;
-                            if (lpparam.packageName.equals("tw.nekomimi.nekogram"))
-                            {
-                                //TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("x81");
-                                //TL_updateDeleteMessages = lpparam.classLoader.loadClass("y81");
+                    {
+                        String gsmMethodName = "getSponsoredMessages";
+                        XposedHelpers.findAndHookMethod(messagesController, gsmMethodName, long.class, XC_MethodReplacement.returnConstant(null));
+                    }
 
-                                //TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("qa1");
-                                //TL_updateDeleteMessages = lpparam.classLoader.loadClass("ra1");
+                    // Anti AntiForward
+                    {
+                        String aafMethodName = "isChatNoForwards";
 
-                                //TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("sa1");
-                                //TL_updateDeleteMessages = lpparam.classLoader.loadClass("ta1");
+                        if (isNekogram(lpparam))
+                            aafMethodName = ObfuscateHelper.resolveNekogramMethod(aafMethodName);
 
-                                TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("Fa1");
-                                TL_updateDeleteMessages = lpparam.classLoader.loadClass("Ga1");
-                            }
-                            else
-                            {
-                                TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass("org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages");
-                                TL_updateDeleteMessages = lpparam.classLoader.loadClass("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages");
-                            }
-                            ArrayList<Object> updates = castList(param.args[0], Object.class);
-                            if (updates != null && !updates.isEmpty())
-                            {
-                                ArrayList<Object> newUpdates = new ArrayList<>();
+                        HookUtils.findAndHookAllMethod(messagesController, aafMethodName, XC_MethodReplacement.returnConstant(false));
 
-                                for (Object item : updates)
-                                    if (!item.getClass().equals(TL_updateDeleteChannelMessages) && !item.getClass().equals(TL_updateDeleteMessages))
-                                        newUpdates.add(item);
-                                    else
-                                    {
-                                        XposedBridge.log("[TGAR] Protected message! event: " + item.getClass());
-                                    }
+                        String messageObjectPath = "org.telegram.messenger.MessageObject";
 
-                                param.args[0] = newUpdates;
-                            }
+                        if (isNekogram(lpparam))
+                            messageObjectPath = ObfuscateHelper.resolveNekogramClass(messageObjectPath);
+
+                        Class<?> messageObject = XposedHelpers.findClassIfExists(messageObjectPath, lpparam.classLoader);
+                        if (messageObject != null)
+                        {
+                            String aafObjectMethodName = "canForwardMessage";
+
+                            if (isNekogram(lpparam))
+                                aafObjectMethodName = ObfuscateHelper.resolveNekogramMethod(aafObjectMethodName);
+
+                            XposedHelpers.findAndHookMethod(messageObject, aafObjectMethodName, XC_MethodReplacement.returnConstant(false));
                         }
-                    });
+                        else
+                        {
+                            XposedBridge.log("[TGAR Error] Not found MessageObject, " + issue);
+                        }
+                    }
                 }
             }
             else
             {
-                XposedBridge.log("[TGAR] Not found MessagesController, your telegram may have been modified!");
+                XposedBridge.log("[TGAR Error] Not found MessagesController, " + issue);
             }
 
             // Fake Premium
@@ -132,10 +183,11 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
     public static <T> ArrayList<T> castList(Object obj, Class<T> clazz)
     {
         ArrayList<T> result = new ArrayList<>();
-        if(obj instanceof ArrayList<?>)
+        if (obj instanceof ArrayList<?>)
         {
             for (Object o : (ArrayList<?>) obj)
                 result.add(clazz.cast(o));
+
             return result;
         }
         return null;
