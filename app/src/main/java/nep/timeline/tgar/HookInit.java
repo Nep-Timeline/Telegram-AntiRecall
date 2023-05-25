@@ -47,9 +47,11 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
         if (hookPackages.contains(lpparam.packageName)) {
             XposedBridge.log("[TGAR] Trying to hook app: " + lpparam.packageName);
 
-            Class<?> messagesController = XposedHelpers.findClassIfExists("org.telegram.messenger.MessagesController", lpparam.classLoader);
+            String messagesControllerPath = "org.telegram.messenger.MessagesController";
             if (lpparam.packageName.equals("top.qwq2333.nullgram"))
-                messagesController = XposedHelpers.findClassIfExists("kK0", lpparam.classLoader);
+                messagesControllerPath = "kK0";
+
+            Class<?> messagesController = XposedHelpers.findClassIfExists(messagesControllerPath, lpparam.classLoader);
 
             if (messagesController != null)
             {
