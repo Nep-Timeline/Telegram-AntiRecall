@@ -25,7 +25,8 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             "com.cool2645.nekolite",
             "com.exteragram.messenger",
             "org.forkclient.messenger",
-            "org.forkclient.messenger.beta");
+            "org.forkclient.messenger.beta",
+            "top.qwq2333.nullgram");
     private static String MODULE_PATH = null;
 
     @Override
@@ -47,6 +48,8 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             XposedBridge.log("[TGAR] Trying to hook app: " + lpparam.packageName);
 
             Class<?> messagesController = XposedHelpers.findClassIfExists("org.telegram.messenger.MessagesController", lpparam.classLoader);
+            if (lpparam.packageName.equals("top.qwq2333.nullgram"))
+                messagesController = XposedHelpers.findClassIfExists("kK0", lpparam.classLoader);
 
             if (messagesController != null)
             {
