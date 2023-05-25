@@ -33,8 +33,12 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
     private static final boolean DEBUG_MODE = false;
     private static final boolean ONLY_ANTIRECALL = false;
 
-    static {
-        hookPackages.addAll(hookPackagesCustomization);
+    public final List<String> getHookPackages()
+    {
+        List<String> hookPackagesLocal = new ArrayList<>(hookPackages);
+        List<String> hookPackagesCustomizationLocal = new ArrayList<>(hookPackagesCustomization);
+        hookPackagesLocal.addAll(hookPackagesCustomizationLocal);
+        return hookPackagesLocal;
     }
 
     @Override
@@ -44,7 +48,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
 
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
-        if (!hookPackages.contains(resparam.packageName))
+        if (!getHookPackages().contains(resparam.packageName))
             return;
 
         XModuleResources.createInstance(MODULE_PATH, resparam.res);
@@ -67,7 +71,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        if (hookPackages.contains(lpparam.packageName)) {
+        if (getHookPackages().contains(lpparam.packageName)) {
             if (DEBUG_MODE)
                 XposedBridge.log("[TGAR] Trying to hook app: " + lpparam.packageName);
 
