@@ -23,7 +23,8 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             "com.cool2645.nekolite",
             "com.exteragram.messenger",
             "org.forkclient.messenger",
-            "org.forkclient.messenger.beta");
+            "org.forkclient.messenger.beta",
+            "uz.unnarsx.cherrygram");
     private static final List<String> hookPackagesCustomization = Arrays.asList("xyz.nextalone.nagram",
             "xyz.nextalone.nnngram",
             "top.qwq2333.nullgram",
