@@ -69,6 +69,11 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
     {
         return lpparam.packageName.equals("top.qwq2333.nullgram");
     }
+    
+    private boolean isCherrygram(final XC_LoadPackage.LoadPackageParam lpparam)
+    {
+        return lpparam.packageName.equals("uz.unnarsx.cherrygram");
+    }
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
@@ -135,6 +140,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                 if (!onlyNeedAR(lpparam) && !ONLY_ANTIRECALL)
                 {
                     // No Sponsored Messages
+                    if (!isCherrygram(lpparam))
                     {
                         String gsmMethodName = "getSponsoredMessages";
                         XposedHelpers.findAndHookMethod(messagesController, gsmMethodName, long.class, XC_MethodReplacement.returnConstant(null));
