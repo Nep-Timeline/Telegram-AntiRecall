@@ -39,7 +39,7 @@ jobs:
 
         with:
 
-          name: app-release
+          name: app-debug
 
           path: ${{github.workspace}}/app/build/outputs/apk/debug/*.apk
 
