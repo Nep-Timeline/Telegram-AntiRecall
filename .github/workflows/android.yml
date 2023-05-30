@@ -22,11 +22,11 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew app:assembleRelease
+        run: ./gradlew build
 
       - name: Upload APK
         uses: actions/upload-artifact@v2
         with:
-          name: app-release
-          path: ${{github.workspace}}/app/build/outputs/apk/release/*.apk
+          name: app-debug
+          path: ${{github.workspace}}/app/build/outputs/apk/debug/*.apk
           if-no-files-found: warn
