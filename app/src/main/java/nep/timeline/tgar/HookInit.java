@@ -25,9 +25,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             "org.forkclient.messenger",
             "org.forkclient.messenger.beta",
             "uz.unnarsx.cherrygram");
-    private static final List<String> hookPackagesCustomization = Arrays.asList("xyz.nextalone.nagram",
-            "xyz.nextalone.nnngram",
-            "top.qwq2333.nullgram",
+    private static final List<String> hookPackagesCustomization = Arrays.asList("xyz.nextalone.nagram", "xyz.nextalone.nnngram",
             "nekox.messenger");
     private static String MODULE_PATH = null;
     private static final String issue = "Your telegram may have been modified! You can submit issue to let developer to try support to the telegram client you are using.";
@@ -65,11 +63,6 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
         return lpparam.packageName.equals("tw.nekomimi.nekogram");
     }
 
-    private boolean isNullgram(final XC_LoadPackage.LoadPackageParam lpparam)
-    {
-        return lpparam.packageName.equals("top.qwq2333.nullgram");
-    }
-    
     private boolean isCherrygram(final XC_LoadPackage.LoadPackageParam lpparam)
     {
         return lpparam.packageName.equals("uz.unnarsx.cherrygram");
@@ -82,8 +75,6 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                 XposedBridge.log("[TGAR] Trying to hook app: " + lpparam.packageName);
 
             String messagesControllerPath = "org.telegram.messenger.MessagesController";
-            if (isNullgram(lpparam))
-                messagesControllerPath = ObfuscateHelper.resolveNullgramClass(messagesControllerPath);
 
             Class<?> messagesController = XposedHelpers.findClassIfExists(messagesControllerPath, lpparam.classLoader);
 
