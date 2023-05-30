@@ -8,10 +8,6 @@ public class ObfuscateHelper {
     private static final Map<String, String> nekogramClass = new HashMap<>();
     private static final Map<String, String> nekogramMethod = new HashMap<>();
 
-    // Nullgram
-    private static final Map<String, String> nullgramClass = new HashMap<>();
-    private static final Map<String, String> nullgramMethod = new HashMap<>();
-
     static {
         // Nekogram
         nekogramClass.put("org.telegram.messenger.MessageObject", "ac0");
@@ -19,9 +15,6 @@ public class ObfuscateHelper {
         nekogramClass.put("org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages", "Fa1");
         nekogramMethod.put("isChatNoForwards", "i1");
         nekogramMethod.put("canForwardMessage", "n");
-
-        // Nullgram
-        nullgramClass.put("org.telegram.messenger.MessagesController", "kK0");
     }
 
     public static String resolveNekogramClass(String classPathAndName)
@@ -38,21 +31,5 @@ public class ObfuscateHelper {
             return methodName;
 
         return nekogramMethod.get(methodName);
-    }
-
-    public static String resolveNullgramClass(String classPathAndName)
-    {
-        if (!nullgramClass.containsKey(classPathAndName))
-            return classPathAndName;
-
-        return nullgramClass.get(classPathAndName);
-    }
-
-    public static String resolveNullgramMethod(String methodName)
-    {
-        if (!nullgramMethod.containsKey(methodName))
-            return methodName;
-
-        return nullgramMethod.get(methodName);
     }
 }
