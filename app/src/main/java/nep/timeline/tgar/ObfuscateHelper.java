@@ -10,7 +10,7 @@ public class ObfuscateHelper {
 
     static {
         // Nekogram
-        nekogramClass.put("org.telegram.messenger.MessageObject", "ac0");
+        nekogramClass.put("org.telegram.messenger.MessageObject", "bc0");
         nekogramClass.put("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages", "Ga1");
         nekogramClass.put("org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages", "Fa1");
         nekogramMethod.put("isChatNoForwards", "i1");
