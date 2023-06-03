@@ -29,7 +29,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             "nekox.messenger");
     private static String MODULE_PATH = null;
     private static final String issue = "Your telegram may have been modified! You can submit issue to let developer to try support to the telegram client you are using.";
-    private static final boolean DEBUG_MODE = false;
+    private static final boolean DEBUG_MODE = true;
     private static final boolean ONLY_ANTIRECALL = false;
 
     public final List<String> getHookPackages()
