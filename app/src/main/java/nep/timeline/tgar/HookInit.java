@@ -119,8 +119,6 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                                         else if (DEBUG_MODE)
                                             XposedBridge.log("[TGAR] Protected message! event: " + item.getClass());
 
-                                    if (DEBUG_MODE)
-                                        newUpdates.forEach(i -> XposedBridge.log("[TGAR Debug] Event List: " + i.getClass())); // Use to get obfuscated event names from Nekogram
                                     param.args[0] = newUpdates;
                                 }
                             }
