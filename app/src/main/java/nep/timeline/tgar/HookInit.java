@@ -16,6 +16,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import nep.timeline.tgar.obfuscate.AutomationResolver;
 
 public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
     private static final List<String> hookPackages = Arrays.asList("org.telegram.messenger", "org.telegram.messenger.web", "org.telegram.messenger.beta", "org.telegram.plus",
@@ -53,9 +54,9 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
         XModuleResources.createInstance(MODULE_PATH, resparam.res);
     }
 
-    private boolean onlyNeedAR(final XC_LoadPackage.LoadPackageParam lppara)
+    private boolean onlyNeedAR(final XC_LoadPackage.LoadPackageParam lpparam)
     {
-        return hookPackagesCustomization.contains(lppara.packageName);
+        return hookPackagesCustomization.contains(lpparam.packageName);
     }
 
     @Override
@@ -64,9 +65,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             if (DEBUG_MODE)
                 XposedBridge.log("[TGAR] Trying to hook app: " + lpparam.packageName);
 
-            String messagesControllerPath = "org.telegram.messenger.MessagesController";
-
-            Class<?> messagesController = XposedHelpers.findClassIfExists(messagesControllerPath, lpparam.classLoader);
+            Class<?> messagesController = XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.messenger.MessagesController", lpparam), lpparam.classLoader);
 
             if (messagesController != null)
             {
@@ -89,15 +88,8 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                         XposedHelpers.findAndHookMethod(messagesController, methodName, ArrayList.class, ArrayList.class, ArrayList.class, boolean.class, int.class, new XC_MethodHook() {
                             @Override
                             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                String TL_updateDeleteMessagesPath = "org.telegram.tgnet.TLRPC$TL_updateDeleteMessages";
-                                String TL_updateDeleteChannelMessagesPath = "org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages";
-                                if (ClientChecker.isNekogram(lpparam))
-                                {
-                                    TL_updateDeleteMessagesPath = ObfuscateHelper.resolveNekogramClass(TL_updateDeleteMessagesPath);
-                                    TL_updateDeleteChannelMessagesPath = ObfuscateHelper.resolveNekogramClass(TL_updateDeleteChannelMessagesPath);
-                                }
-                                Class<?> TL_updateDeleteMessages = lpparam.classLoader.loadClass(TL_updateDeleteMessagesPath);
-                                Class<?> TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass(TL_updateDeleteChannelMessagesPath);
+                                Class<?> TL_updateDeleteMessages = lpparam.classLoader.loadClass(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages", lpparam));
+                                Class<?> TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages", lpparam));
                                 ArrayList<Object> updates = castList(param.args[0], Object.class);
                                 if (updates != null && !updates.isEmpty())
                                 {
@@ -124,33 +116,17 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                     // No Sponsored Messages
                     if (!ClientChecker.isCherrygram(lpparam))
                     {
-                        String gsmMethodName = "getSponsoredMessages";
-                        XposedHelpers.findAndHookMethod(messagesController, gsmMethodName, long.class, XC_MethodReplacement.returnConstant(null));
+                        XposedHelpers.findAndHookMethod(messagesController, AutomationResolver.resolve("MessagesController", "getSponsoredMessages", AutomationResolver.ResolverType.Method, lpparam), long.class, XC_MethodReplacement.returnConstant(null));
                     }
 
                     // Anti AntiForward
                     {
-                        String aafMethodName = "isChatNoForwards";
+                        HookUtils.findAndHookAllMethod(messagesController, AutomationResolver.resolve("MessagesController", "isChatNoForwards", AutomationResolver.ResolverType.Method, lpparam), XC_MethodReplacement.returnConstant(false));
 
-                        if (ClientChecker.isNekogram(lpparam))
-                            aafMethodName = ObfuscateHelper.resolveNekogramMethod(aafMethodName);
-
-                        HookUtils.findAndHookAllMethod(messagesController, aafMethodName, XC_MethodReplacement.returnConstant(false));
-
-                        String messageObjectPath = "org.telegram.messenger.MessageObject";
-
-                        if (ClientChecker.isNekogram(lpparam))
-                            messageObjectPath = ObfuscateHelper.resolveNekogramClass(messageObjectPath);
-
-                        Class<?> messageObject = XposedHelpers.findClassIfExists(messageObjectPath, lpparam.classLoader);
+                        Class<?> messageObject = XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.messenger.MessageObject", lpparam), lpparam.classLoader);
                         if (messageObject != null)
                         {
-                            String aafObjectMethodName = "canForwardMessage";
-
-                            if (ClientChecker.isNekogram(lpparam))
-                                aafObjectMethodName = ObfuscateHelper.resolveNekogramMethod(aafObjectMethodName);
-
-                            XposedHelpers.findAndHookMethod(messageObject, aafObjectMethodName, XC_MethodReplacement.returnConstant(false));
+                            XposedHelpers.findAndHookMethod(messageObject, AutomationResolver.resolve("MessageObject", "canForwardMessage", AutomationResolver.ResolverType.Method, lpparam), XC_MethodReplacement.returnConstant(false));
                         }
                         else
                         {
