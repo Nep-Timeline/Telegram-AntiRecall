@@ -2,7 +2,6 @@ package nep.timeline.tgar.viruals;
 
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import nep.timeline.tgar.ClientChecker;
 import nep.timeline.tgar.obfuscate.AutomationResolver;
 import nep.timeline.tgar.utils.MethodUtils;
 
@@ -16,11 +15,14 @@ public class MessagesController {
         this.lpparam = lpparam;
     }
 
-    public TLRPC.Chat getChat(long chatId, final XC_LoadPackage.LoadPackageParam lpparam) {
-        return new TLRPC.Chat(MethodUtils.invokeMethodOfClass(this.instance, AutomationResolver.resolve("MessagesController", "getChat", AutomationResolver.ResolverType.Method, lpparam), chatId), lpparam);
+    public TLRPC.Chat getChat(long chatId) {
+        String getChatMethod = AutomationResolver.resolve("MessagesController", "getChat", AutomationResolver.ResolverType.Method, lpparam);
+        return new TLRPC.Chat(MethodUtils.invokeMethodOfClass(this.instance, getChatMethod, chatId), lpparam);
     }
 
     public static MessagesController getInstance(final XC_LoadPackage.LoadPackageParam lpparam) {
-        return new MessagesController(MethodUtils.invokeMethodOfClass(XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.messenger.MessagesController", lpparam), lpparam.classLoader), AutomationResolver.resolve("MessagesController", "getInstance", AutomationResolver.ResolverType.Method, lpparam), UserConfig.getSelectedAccount(lpparam)), lpparam);
+        Class<?> messagesController = XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.messenger.MessagesController", lpparam), lpparam.classLoader);
+        String getInstanceMethod = AutomationResolver.resolve("MessagesController", "getInstance", AutomationResolver.ResolverType.Method, lpparam);
+        return new MessagesController(MethodUtils.invokeMethodOfClass(messagesController, getInstanceMethod, UserConfig.getSelectedAccount(lpparam)), lpparam);
     }
 }

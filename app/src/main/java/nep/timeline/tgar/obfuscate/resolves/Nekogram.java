@@ -19,6 +19,8 @@ public class Nekogram {
         classList.add(new ClassInfo("org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages", "Ia1"));
         classList.add(new ClassInfo("org.telegram.ui.Cells.ChatMessageCell", "org.telegram.ui.Cells.r"));
         fieldList.add(new FieldInfo("UserConfig", "selectedAccount", "o"));
+        fieldList.add(new FieldInfo("MessagesController", "dialogMessagesByIds", "f113e"));
+        fieldList.add(new FieldInfo("MessageObject", "messageText", "f21a"));
         methodList.add(new MethodInfo("MessageObject", "updateMessageText", "y3"));
         methodList.add(new MethodInfo("MessagesController", "isChatNoForwards", "i1"));
         methodList.add(new MethodInfo("MessageObject", "canForwardMessage", "n"));

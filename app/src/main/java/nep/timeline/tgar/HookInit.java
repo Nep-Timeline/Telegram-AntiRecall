@@ -90,7 +90,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                 Class<?> TL_updateDeleteMessages = lpparam.classLoader.loadClass(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages", lpparam));
                                 Class<?> TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages", lpparam));
-                                ArrayList<Object> updates = castList(param.args[0], Object.class);
+                                ArrayList<Object> updates = Utils.castList(param.args[0], Object.class);
                                 if (updates != null && !updates.isEmpty())
                                 {
                                     ArrayList<Object> newUpdates = new ArrayList<>();
@@ -116,17 +116,20 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                     // No Sponsored Messages
                     if (!ClientChecker.isCherrygram(lpparam))
                     {
-                        XposedHelpers.findAndHookMethod(messagesController, AutomationResolver.resolve("MessagesController", "getSponsoredMessages", AutomationResolver.ResolverType.Method, lpparam), long.class, XC_MethodReplacement.returnConstant(null));
+                        String getSponsoredMessagesMethod = AutomationResolver.resolve("MessagesController", "getSponsoredMessages", AutomationResolver.ResolverType.Method, lpparam);
+                        XposedHelpers.findAndHookMethod(messagesController, getSponsoredMessagesMethod, long.class, XC_MethodReplacement.returnConstant(null));
                     }
 
                     // Anti AntiForward
                     {
-                        HookUtils.findAndHookAllMethod(messagesController, AutomationResolver.resolve("MessagesController", "isChatNoForwards", AutomationResolver.ResolverType.Method, lpparam), XC_MethodReplacement.returnConstant(false));
+                        String isChatNoForwardsMethod = AutomationResolver.resolve("MessagesController", "isChatNoForwards", AutomationResolver.ResolverType.Method, lpparam);
+                        HookUtils.findAndHookAllMethod(messagesController, isChatNoForwardsMethod, XC_MethodReplacement.returnConstant(false));
 
                         Class<?> messageObject = XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.messenger.MessageObject", lpparam), lpparam.classLoader);
                         if (messageObject != null)
                         {
-                            XposedHelpers.findAndHookMethod(messageObject, AutomationResolver.resolve("MessageObject", "canForwardMessage", AutomationResolver.ResolverType.Method, lpparam), XC_MethodReplacement.returnConstant(false));
+                            String canForwardMessageMethod = AutomationResolver.resolve("MessageObject", "canForwardMessage", AutomationResolver.ResolverType.Method, lpparam);
+                            XposedHelpers.findAndHookMethod(messageObject, canForwardMessageMethod, XC_MethodReplacement.returnConstant(false));
                         }
                         else
                         {
@@ -147,18 +150,5 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             // Class<?> chatMessageCell = XposedHelpers.findClassIfExists("org.telegram.ui.Cells.ChatMessageCell", lpparam.classLoader);
             // Class<?> messageObject = XposedHelpers.findClassIfExists("org.telegram.messenger.MessageObject", lpparam.classLoader);
         }
-    }
-
-    public static <T> ArrayList<T> castList(Object obj, Class<T> clazz)
-    {
-        ArrayList<T> result = new ArrayList<>();
-        if (obj instanceof ArrayList<?>)
-        {
-            for (Object o : (ArrayList<?>) obj)
-                result.add(clazz.cast(o));
-
-            return result;
-        }
-        return null;
     }
 }
