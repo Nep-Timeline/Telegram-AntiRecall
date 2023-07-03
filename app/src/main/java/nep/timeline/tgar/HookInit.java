@@ -112,8 +112,6 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                                                 XposedBridge.log("[TGAR] Protected message! event: " + item.getClass());
                                         }
 
-                                    if (DEBUG_MODE)
-                                        newUpdates.forEach(i -> XposedBridge.log("[TGAR Debug] Event List: " + i.getClass())); // Use to get obfuscated event names from Nekogram
                                     param.args[0] = newUpdates;
                                 }
                             }
@@ -124,6 +122,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                 if (!onlyNeedAR(lpparam) && !ONLY_ANTIRECALL)
                 {
                     // No Sponsored Messages
+                    if (!ClientChecker.isCherrygram(lpparam))
                     {
                         String gsmMethodName = "getSponsoredMessages";
                         XposedHelpers.findAndHookMethod(messagesController, gsmMethodName, long.class, XC_MethodReplacement.returnConstant(null));
