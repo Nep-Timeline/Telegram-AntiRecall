@@ -11,15 +11,18 @@ public class ObfuscateHelper {
 
     static {
         // Nekogram
-        nekogramClass.put("org.telegram.messenger.MessageObject", "ac0");
+        nekogramClass.put("org.telegram.messenger.MessageObject", "bc0");
         nekogramClass.put("org.telegram.messenger.UserConfig", "sm1");
         nekogramClass.put("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages", "Ga1");
         nekogramClass.put("org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages", "Fa1");
+        nekogramClass.put("org.telegram.ui.Cells.ChatMessageCell", "org.telegram.ui.Cells.r");
         nekogramField.put("selectedAccount", "o");
+        nekogramMethod.put("updateMessageText", "y3");
         nekogramMethod.put("isChatNoForwards", "i1");
         nekogramMethod.put("canForwardMessage", "n");
         nekogramMethod.put("getChat", "j0");
         nekogramMethod.put("getInstance", "I0");
+        nekogramMethod.put("measureTime", "W4");
     }
 
     public static String resolveNekogramClass(String classPathAndName)

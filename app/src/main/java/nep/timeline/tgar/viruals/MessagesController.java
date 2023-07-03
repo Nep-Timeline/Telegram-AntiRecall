@@ -1,7 +1,5 @@
 package nep.timeline.tgar.viruals;
 
-import java.lang.reflect.InvocationTargetException;
-
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import nep.timeline.tgar.ClientChecker;
@@ -18,11 +16,11 @@ public class MessagesController {
         this.lpparam = lpparam;
     }
 
-    public Object getChat(long chatId, final XC_LoadPackage.LoadPackageParam lpparam) {
+    public TLRPC.Chat getChat(long chatId, final XC_LoadPackage.LoadPackageParam lpparam) {
         String getInstanceMethodName = "getChat";
         if (ClientChecker.isNekogram(lpparam))
             getInstanceMethodName = ObfuscateHelper.resolveNekogramMethod(getInstanceMethodName);
-        return MethodUtils.invokeMethodOfClass(this.instance, getInstanceMethodName, chatId);
+        return new TLRPC.Chat(MethodUtils.invokeMethodOfClass(this.instance, getInstanceMethodName, chatId), lpparam);
     }
 
     public static MessagesController getInstance(final XC_LoadPackage.LoadPackageParam lpparam) {
