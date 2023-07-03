@@ -61,6 +61,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
+        Utils.globalLoadPackageParam = lpparam;
         if (getHookPackages().contains(lpparam.packageName)) {
             if (DEBUG_MODE)
                 XposedBridge.log("[TGAR] Trying to hook app: " + lpparam.packageName);

@@ -2,6 +2,7 @@ package nep.timeline.tgar.obfuscate;
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import nep.timeline.tgar.ClientChecker;
+import nep.timeline.tgar.Utils;
 import nep.timeline.tgar.obfuscate.resolves.Nekogram;
 
 public class AutomationResolver {
@@ -33,6 +34,16 @@ public class AutomationResolver {
         }
 
         return name;
+    }
+
+    public static String resolve(String className)
+    {
+        return resolve(className, Utils.globalLoadPackageParam);
+    }
+
+    public static String resolve(String className, String name, ResolverType type)
+    {
+        return resolve(className, name, type, Utils.globalLoadPackageParam);
     }
 
     public enum ResolverType
