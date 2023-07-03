@@ -19,4 +19,20 @@ public class TLRPC {
             return FieldUtils.getFieldLongOfClass(this.instance, "id");
         }
     }
+
+    public static class TL_updateDeleteChannelMessages {
+        private final Object instance;
+        private final XC_LoadPackage.LoadPackageParam lpparam;
+
+        public TL_updateDeleteChannelMessages(Object instance, final XC_LoadPackage.LoadPackageParam lpparam)
+        {
+            this.instance = instance;
+            this.lpparam = lpparam;
+        }
+
+        public long getChannelID()
+        {
+            return FieldUtils.getFieldLongOfClass(this.instance, "channel_id");
+        }
+    }
 }
