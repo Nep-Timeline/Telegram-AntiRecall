@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="xposed_scope">
-        <!--这里是填入需要自动勾选的应用的包名，多个就是多个item-->
         <item>org.telegram.messenger</item>
         <item>org.telegram.messenger.web</item>
         <item>org.telegram.messenger.beta</item>
