@@ -13,8 +13,8 @@ public class ObfuscateHelper {
         // Nekogram
         nekogramClass.put("org.telegram.messenger.MessageObject", "bc0");
         nekogramClass.put("org.telegram.messenger.UserConfig", "sm1");
-        nekogramClass.put("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages", "Ga1");
-        nekogramClass.put("org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages", "Fa1");
+        nekogramClass.put("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages", "Ja1");
+        nekogramClass.put("org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages", "Ia1");
         nekogramClass.put("org.telegram.ui.Cells.ChatMessageCell", "org.telegram.ui.Cells.r");
         nekogramField.put("selectedAccount", "o");
         nekogramMethod.put("updateMessageText", "y3");
