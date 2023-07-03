@@ -58,16 +58,6 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
         return hookPackagesCustomization.contains(lppara.packageName);
     }
 
-    private boolean isNekogram(final XC_LoadPackage.LoadPackageParam lpparam)
-    {
-        return lpparam.packageName.equals("tw.nekomimi.nekogram");
-    }
-
-    private boolean isCherrygram(final XC_LoadPackage.LoadPackageParam lpparam)
-    {
-        return lpparam.packageName.equals("uz.unnarsx.cherrygram");
-    }
-
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         if (getHookPackages().contains(lpparam.packageName)) {
@@ -101,7 +91,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                 String TL_updateDeleteMessagesPath = "org.telegram.tgnet.TLRPC$TL_updateDeleteMessages";
                                 String TL_updateDeleteChannelMessagesPath = "org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages";
-                                if (isNekogram(lpparam))
+                                if (ClientChecker.isNekogram(lpparam))
                                 {
                                     TL_updateDeleteMessagesPath = ObfuscateHelper.resolveNekogramClass(TL_updateDeleteMessagesPath);
                                     TL_updateDeleteChannelMessagesPath = ObfuscateHelper.resolveNekogramClass(TL_updateDeleteChannelMessagesPath);
@@ -116,9 +106,14 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                                     for (Object item : updates)
                                         if (!item.getClass().equals(TL_updateDeleteChannelMessages) && !item.getClass().equals(TL_updateDeleteMessages))
                                             newUpdates.add(item);
-                                        else if (DEBUG_MODE)
-                                            XposedBridge.log("[TGAR] Protected message! event: " + item.getClass());
+                                        else
+                                        {
+                                            if (DEBUG_MODE)
+                                                XposedBridge.log("[TGAR] Protected message! event: " + item.getClass());
+                                        }
 
+                                    if (DEBUG_MODE)
+                                        newUpdates.forEach(i -> XposedBridge.log("[TGAR Debug] Event List: " + i.getClass())); // Use to get obfuscated event names from Nekogram
                                     param.args[0] = newUpdates;
                                 }
                             }
@@ -129,7 +124,6 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                 if (!onlyNeedAR(lpparam) && !ONLY_ANTIRECALL)
                 {
                     // No Sponsored Messages
-                    if (!isCherrygram(lpparam))
                     {
                         String gsmMethodName = "getSponsoredMessages";
                         XposedHelpers.findAndHookMethod(messagesController, gsmMethodName, long.class, XC_MethodReplacement.returnConstant(null));
@@ -139,14 +133,14 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                     {
                         String aafMethodName = "isChatNoForwards";
 
-                        if (isNekogram(lpparam))
+                        if (ClientChecker.isNekogram(lpparam))
                             aafMethodName = ObfuscateHelper.resolveNekogramMethod(aafMethodName);
 
                         HookUtils.findAndHookAllMethod(messagesController, aafMethodName, XC_MethodReplacement.returnConstant(false));
 
                         String messageObjectPath = "org.telegram.messenger.MessageObject";
 
-                        if (isNekogram(lpparam))
+                        if (ClientChecker.isNekogram(lpparam))
                             messageObjectPath = ObfuscateHelper.resolveNekogramClass(messageObjectPath);
 
                         Class<?> messageObject = XposedHelpers.findClassIfExists(messageObjectPath, lpparam.classLoader);
@@ -154,7 +148,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                         {
                             String aafObjectMethodName = "canForwardMessage";
 
-                            if (isNekogram(lpparam))
+                            if (ClientChecker.isNekogram(lpparam))
                                 aafObjectMethodName = ObfuscateHelper.resolveNekogramMethod(aafObjectMethodName);
 
                             XposedHelpers.findAndHookMethod(messageObject, aafObjectMethodName, XC_MethodReplacement.returnConstant(false));
