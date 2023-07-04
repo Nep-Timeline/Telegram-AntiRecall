@@ -90,7 +90,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                             @Override
                             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                 Class<?> TL_updateDeleteMessages = lpparam.classLoader.loadClass(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages", lpparam));
-                                Class<?> TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages", lpparam));
+                                Class<?> TL_updateDeleteChannelMessages = lpparam.classLoader.loadClass(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages", lpparam));
                                 ArrayList<Object> updates = Utils.castList(param.args[0], Object.class);
                                 if (updates != null && !updates.isEmpty())
                                 {

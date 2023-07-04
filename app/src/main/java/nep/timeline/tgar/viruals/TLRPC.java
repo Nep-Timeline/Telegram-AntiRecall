@@ -18,6 +18,11 @@ public class TLRPC {
         {
             return FieldUtils.getFieldLongOfClass(this.instance, "id");
         }
+
+        public String getTitle()
+        {
+            return (String) FieldUtils.getFieldClassOfClass(this.instance, "title");
+        }
     }
 
     public static class TL_updateDeleteChannelMessages {

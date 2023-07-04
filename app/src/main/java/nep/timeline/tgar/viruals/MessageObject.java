@@ -14,6 +14,10 @@ public class MessageObject {
     public CharSequence getMessageText()
     {
         String messageTextField = AutomationResolver.resolve("MessageObject", "messageText", AutomationResolver.ResolverType.Field);
-        return (CharSequence) FieldUtils.getFieldClassOfClass(this.instance, messageTextField);
+        Object messageTextFieldUnchecked = FieldUtils.getFieldClassOfClass(this.instance, messageTextField);
+        if (messageTextFieldUnchecked instanceof CharSequence)
+            return (CharSequence) messageTextFieldUnchecked;
+
+        return null;
     }
 }
