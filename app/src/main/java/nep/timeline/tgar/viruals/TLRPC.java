@@ -25,6 +25,49 @@ public class TLRPC {
         }
     }
 
+    public static class Peer {
+        private final Object instance;
+
+        public Peer(Object instance)
+        {
+            this.instance = instance;
+        }
+
+        public long getUserID()
+        {
+            return FieldUtils.getFieldLongOfClass(this.instance, "user_id");
+        }
+
+        public long getChatID()
+        {
+            return FieldUtils.getFieldLongOfClass(this.instance, "chat_id");
+        }
+
+        public long getChannelID()
+        {
+            return FieldUtils.getFieldLongOfClass(this.instance, "channel_id");
+        }
+    }
+
+    public static class Message {
+        private final Object instance;
+
+        public Message(Object instance)
+        {
+            this.instance = instance;
+        }
+
+        public int getID()
+        {
+            return FieldUtils.getFieldIntOfClass(this.instance, "id");
+        }
+
+        public Peer getPeerID()
+        {
+            return new Peer(FieldUtils.getFieldClassOfClass(this.instance, "peer_id"));
+        }
+    }
+
     public static class TL_updateDeleteChannelMessages {
         private final Object instance;
 

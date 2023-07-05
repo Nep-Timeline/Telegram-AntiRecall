@@ -13,20 +13,32 @@ public class Nekogram {
     private static final List<MethodInfo> methodList = new ArrayList<>();
 
     static {
+        classList.add(new ClassInfo("org.telegram.messenger.NotificationsController", "Uj0"));
+        classList.add(new ClassInfo("org.telegram.messenger.NotificationCenter", "ui0"));
+        classList.add(new ClassInfo("org.telegram.messenger.MessagesStorage", "yf0"));
         classList.add(new ClassInfo("org.telegram.messenger.MessageObject", "bc0"));
         classList.add(new ClassInfo("org.telegram.messenger.UserConfig", "sm1"));
         classList.add(new ClassInfo("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages", "Ja1"));
         classList.add(new ClassInfo("org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages", "Ia1"));
         classList.add(new ClassInfo("org.telegram.ui.Cells.ChatMessageCell", "org.telegram.ui.Cells.r"));
+        classList.add(new ClassInfo("org.telegram.ui.ActionBar.Theme", "gh1"));
         fieldList.add(new FieldInfo("UserConfig", "selectedAccount", "o"));
+        fieldList.add(new FieldInfo("Theme", "chat_timePaint", "J"));
+        fieldList.add(new FieldInfo("NotificationCenter", "messagesDeleted", "i"));
         // fieldList.add(new FieldInfo("MessagesController", "dialogMessagesByIds", "f113e"));
         fieldList.add(new FieldInfo("MessageObject", "messageText", "f21a"));
+        methodList.add(new MethodInfo("NotificationsController", "removeNotificationsForDialog", "E"));
+        methodList.add(new MethodInfo("NotificationCenter", "postNotificationName", "i"));
+        methodList.add(new MethodInfo("MessagesStorage", "markMessagesAsDeleted", "z0"));
+        methodList.add(new MethodInfo("MessagesStorage", "updateDialogsWithDeletedMessages", "B1"));
         methodList.add(new MethodInfo("MessageObject", "updateMessageText", "y3"));
         methodList.add(new MethodInfo("MessagesController", "isChatNoForwards", "i1"));
         methodList.add(new MethodInfo("MessageObject", "canForwardMessage", "n"));
         methodList.add(new MethodInfo("MessagesController", "getChat", "j0"));
         methodList.add(new MethodInfo("MessagesController", "getInstance", "I0"));
         methodList.add(new MethodInfo("ChatMessageCell", "measureTime", "W4"));
+        methodList.add(new MethodInfo("UserConfig", "getInstance", "g"));
+        methodList.add(new MethodInfo("NotificationsController", "removeDeletedMessagesFromNotifications", "D"));
     }
 
     public static class ClassResolver

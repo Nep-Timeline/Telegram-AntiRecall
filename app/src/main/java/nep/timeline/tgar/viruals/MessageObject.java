@@ -20,4 +20,10 @@ public class MessageObject {
 
         return null;
     }
+
+    public TLRPC.Message getMessageOwner()
+    {
+        String messageOwnerField = AutomationResolver.resolve("MessageObject", "messageOwner", AutomationResolver.ResolverType.Field);
+        return new TLRPC.Message(FieldUtils.getFieldClassOfClass(this.instance, messageOwnerField));
+    }
 }

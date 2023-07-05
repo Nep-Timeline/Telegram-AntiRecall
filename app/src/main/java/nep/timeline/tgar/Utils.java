@@ -1,11 +1,24 @@
 package nep.timeline.tgar;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class Utils {
     public static XC_LoadPackage.LoadPackageParam globalLoadPackageParam = null;
+    public static final String issue = "Your telegram may have been modified! You can submit issue to let developer to try support to the telegram client you are using.";
+    private static final ExecutorService sExecutorService = Executors.newCachedThreadPool();
+
+    public static void async(@Nullable Runnable r) {
+        if (r == null) {
+            return;
+        }
+        sExecutorService.execute(r);
+    }
 
     public static <T> ArrayList<T> castList(Object obj, Class<T> clazz)
     {
