@@ -5,9 +5,6 @@ import android.os.Build;
 
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
-import de.robv.android.xposed.XposedBridge;
-import nep.timeline.tgar.Utils;
-
 public class StartupRoutine {
 
     private StartupRoutine() {
@@ -19,31 +16,13 @@ public class StartupRoutine {
      * There are the early init procedures.
      *
      * @param application the application
-     * @param lpwReserved null, not used
-     * @param bReserved   false, not used
      */
-    public static void execPreStartupInit(Application application, String lpwReserved, boolean bReserved) {
+    public static void execPreStartupInit(Application application) {
         // native library was already loaded before this method is called
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             HiddenApiBypass.setHiddenApiExemptions("L");
         }
         HostInfo.setHostApplication(application);
         Initiator.initWithHostClassLoader(application.getClassLoader());
-    }
-
-    public static void execPostStartupInit() {
-        Class<?> kTheme = ClassLocator.getThemeClass();
-        if (kTheme == null) {
-            XposedBridge.log("can not find class Theme");
-            // maybe obfuscated
-            Utils.async(() -> {
-                Class<?> k = ClassLocator.findThemeClass();
-                if (k != null) {
-                    XposedBridge.log("find class Theme: " + k.getName());
-                } else {
-                    XposedBridge.log("can not find class Theme");
-                }
-            });
-        }
     }
 }

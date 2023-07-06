@@ -91,22 +91,4 @@ public class AccountController {
     public static boolean isCurrentUserLoggedIn() {
         return getCurrentActiveUserId() != 0;
     }
-
-    public static class NoUserLoginException extends Exception {
-        public NoUserLoginException() {
-            super("no user login");
-        }
-
-        public NoUserLoginException(String msg) {
-            super(msg);
-        }
-
-        public NoUserLoginException(Throwable cause) {
-            super(cause);
-        }
-
-        public NoUserLoginException(String msg, Throwable cause) {
-            super(msg, cause);
-        }
-    }
 }

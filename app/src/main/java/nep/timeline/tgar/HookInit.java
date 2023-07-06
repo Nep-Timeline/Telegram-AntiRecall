@@ -28,6 +28,7 @@ import nep.timeline.tgar.viruals.ChatMessageCellDefault;
 import nep.timeline.tgar.viruals.MessageObject;
 import nep.timeline.tgar.viruals.OfficialChatMessageCell;
 import nep.timeline.tgar.viruals.TLRPC;
+import nep.timeline.tgar.viruals.Theme;
 import nep.timeline.tgar.viruals.nekogram.NekoChatMessageCell;
 
 public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, IXposedHookInitPackageResources {
@@ -78,76 +79,69 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             Utils.globalLoadPackageParam = lpparam;
             StartupHook.INSTANCE.doInit(lpparam.classLoader);
 
-            /*
             Class<?> chatMessageCell = XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.ui.Cells.ChatMessageCell"), lpparam.classLoader);
 
             if (chatMessageCell != null) {
-                Class<?> theme = XposedHelpers.findClass(AutomationResolver.resolve("org.telegram.ui.ActionBar.Theme"), lpparam.classLoader);
-
-                if (theme != null)
-                {
-                    Field chat_timePaintField = FieldUtils.getFieldOfClass(theme, AutomationResolver.resolve("Theme", "chat_timePaint", AutomationResolver.ResolverType.Field));
-                    HookUtils.findAndHookMethod(chatMessageCell, AutomationResolver.resolve("ChatMessageCell", "measureTime", AutomationResolver.ResolverType.Method), new XC_MethodHook() {
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                            if (ClientChecker.isNekogram())
-                            {
-                                NekoChatMessageCell cell = new NekoChatMessageCell(param.thisObject);
-                                SpannableStringBuilder time = cell.getCurrentTimeString();
-                                MessageObject messageObject = new MessageObject(param.args[0]);
-                                TLRPC.Message owner = messageObject.getMessageOwner();
-                                TLRPC.Peer peerID = owner.getPeerID();
-                                long dialog_id = peerID.getChannelID();
-                                int id = owner.getID();
-                                String deleted = "";
-                                if (AntiDeleteMsg.messageIsDeleted(id, dialog_id)) {
-                                    deleted = "(recalled) ";
-                                }
-                                SpannableStringBuilder delta = new SpannableStringBuilder();
-                                delta.append(deleted).append(" ");
-                                time = delta.append(time.toString());
-                                cell.setCurrentTimeString(time);
-                                TextPaint paint = (TextPaint) chat_timePaintField.get(null);
-                                assert paint != null;
-                                int deltaWidth = (int) Math.ceil(paint.measureText(delta.toString()));
-                                cell.setTimeTextWidth(deltaWidth + cell.getTimeTextWidth());
-                                cell.setTimeWidth(deltaWidth + cell.getTimeWidth());
+                HookUtils.findAndHookMethod(chatMessageCell, AutomationResolver.resolve("ChatMessageCell", "measureTime", AutomationResolver.ResolverType.Method), new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        if (ClientChecker.isNekogram())
+                        {
+                            NekoChatMessageCell cell = new NekoChatMessageCell(param.thisObject);
+                            SpannableStringBuilder time = cell.getCurrentTimeString();
+                            MessageObject messageObject = new MessageObject(param.args[0]);
+                            TLRPC.Message owner = messageObject.getMessageOwner();
+                            TLRPC.Peer peerID = owner.getPeerID();
+                            long dialog_id = peerID.getChannelID();
+                            int id = owner.getID();
+                            String deleted = "";
+                            if (AntiDeleteMsg.messageIsDeleted(id, dialog_id)) {
+                                deleted = "(recalled) ";
                             }
-                            else
+                            String delta = deleted + " ";
+                            SpannableStringBuilder newDelta = new SpannableStringBuilder();
+                            newDelta.append(delta).append(time);
+                            time = newDelta;
+                            cell.setCurrentTimeString(time);
+                            TextPaint paint = Theme.getTextPaint();
+                            if (paint != null)
                             {
-                                OfficialChatMessageCell cell = new OfficialChatMessageCell(param.thisObject);
-                                String time = (String) cell.getCurrentTimeString();
-                                MessageObject messageObject = new MessageObject(param.args[0]);
-                                TLRPC.Message owner = messageObject.getMessageOwner();
-                                TLRPC.Peer peerID = owner.getPeerID();
-                                long dialog_id = peerID.getChannelID();
-                                int id = owner.getID();
-                                String deleted = "";
-                                if (AntiDeleteMsg.messageIsDeleted(id, dialog_id)) {
-                                    deleted = "(recalled) ";
-                                }
-                                String delta = deleted + " ";
-                                time = delta + time;
-                                cell.setCurrentTimeString(time);
-                                TextPaint paint = (TextPaint) chat_timePaintField.get(null);
-                                assert paint != null;
                                 int deltaWidth = (int) Math.ceil(paint.measureText(delta));
                                 cell.setTimeTextWidth(deltaWidth + cell.getTimeTextWidth());
                                 cell.setTimeWidth(deltaWidth + cell.getTimeWidth());
                             }
                         }
-                    });
-                }
-                else
-                {
-                    XposedBridge.log("[TGAR Error] Not found Theme, " + Utils.issue);
-                }
+                        else
+                        {
+                            OfficialChatMessageCell cell = new OfficialChatMessageCell(param.thisObject);
+                            String time = (String) cell.getCurrentTimeString();
+                            MessageObject messageObject = new MessageObject(param.args[0]);
+                            TLRPC.Message owner = messageObject.getMessageOwner();
+                            TLRPC.Peer peerID = owner.getPeerID();
+                            long dialog_id = peerID.getChannelID();
+                            int id = owner.getID();
+                            String deleted = "";
+                            if (AntiDeleteMsg.messageIsDeleted(id, dialog_id)) {
+                                deleted = "(recalled) ";
+                            }
+                            String delta = deleted + " ";
+                            time = delta + time;
+                            cell.setCurrentTimeString(time);
+                            TextPaint paint = Theme.getTextPaint();
+                            if (paint != null)
+                            {
+                                int deltaWidth = (int) Math.ceil(paint.measureText(delta));
+                                cell.setTimeTextWidth(deltaWidth + cell.getTimeTextWidth());
+                                cell.setTimeWidth(deltaWidth + cell.getTimeWidth());
+                            }
+                        }
+                    }
+                });
             }
             else
             {
                 XposedBridge.log("[TGAR Error] Not found ChatMessageCell, " + Utils.issue);
             }
-            */ // ActionBar.Theme has a bug
 
             Class<?> messagesController = XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.messenger.MessagesController"), lpparam.classLoader);
 
