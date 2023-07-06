@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.robv.android.xposed.XposedBridge;
-import nep.timeline.tgar.TMoe.Initiator;
 import nep.timeline.tgar.Utils;
 import nep.timeline.tgar.obfuscate.AutomationResolver;
-import nep.timeline.tgar.utils.FieldUtils;
 
 public class MessageObject {
     private final Object instance;
@@ -16,16 +14,6 @@ public class MessageObject {
     public MessageObject(Object instance)
     {
         this.instance = instance;
-    }
-
-    public CharSequence getMessageText()
-    {
-        String messageTextField = AutomationResolver.resolve("MessageObject", "messageText", AutomationResolver.ResolverType.Field);
-        Object messageTextFieldUnchecked = FieldUtils.getFieldClassOfClass(this.instance, messageTextField);
-        if (messageTextFieldUnchecked instanceof CharSequence)
-            return (CharSequence) messageTextFieldUnchecked;
-
-        return null;
     }
 
     public TLRPC.Message getMessageOwner()
@@ -39,9 +27,8 @@ public class MessageObject {
             try
             {
                 Field messageOwnerField = null;
-                //Class<?> TL_updateDeleteMessages = Initiator.loadClass(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$Message"));
                 for (Field field : fields) {
-                    if (field.getType().getName().equals("YL0"))
+                    if (field.getType().getName().equals(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$Message")))
                     {
                         messageOwnerField = field;
                     }

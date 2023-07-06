@@ -4,7 +4,6 @@ import android.content.res.XModuleResources;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,12 +18,8 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import nep.timeline.tgar.TMoe.ClassLocator;
-import nep.timeline.tgar.TMoe.Initiator;
 import nep.timeline.tgar.TMoe.StartupHook;
 import nep.timeline.tgar.obfuscate.AutomationResolver;
-import nep.timeline.tgar.utils.FieldUtils;
-import nep.timeline.tgar.viruals.ChatMessageCellDefault;
 import nep.timeline.tgar.viruals.MessageObject;
 import nep.timeline.tgar.viruals.OfficialChatMessageCell;
 import nep.timeline.tgar.viruals.TLRPC;
@@ -44,7 +39,6 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
     private static String MODULE_PATH = null;
     private static final boolean DEBUG_MODE = true;
     private static final boolean ONLY_ANTIRECALL = false;
-    public static final List<Integer> deletedMessages = new ArrayList<>();
 
     public final List<String> getHookPackages()
     {
@@ -92,12 +86,9 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                             SpannableStringBuilder time = cell.getCurrentTimeString();
                             MessageObject messageObject = new MessageObject(param.args[0]);
                             TLRPC.Message owner = messageObject.getMessageOwner();
-                            TLRPC.Peer peerID = owner.getPeerID();
-                            long dialog_id = peerID.getChannelID();
                             int id = owner.getID();
-                            XposedBridge.log(peerID.getChatID() + "");
                             String deleted = "";
-                            if (AntiDeleteMsg.messageIsDeleted(id, dialog_id) || deletedMessages.contains(id)) {
+                            if (AntiDeleteMsg.messageIsDeleted(id)) {
                                 deleted = "(recalled) ";
                             }
                             String delta = deleted + " ";
@@ -119,11 +110,9 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                             String time = (String) cell.getCurrentTimeString();
                             MessageObject messageObject = new MessageObject(param.args[0]);
                             TLRPC.Message owner = messageObject.getMessageOwner();
-                            TLRPC.Peer peerID = owner.getPeerID();
-                            long dialog_id = peerID.getChannelID();
                             int id = owner.getID();
                             String deleted = "";
-                            if (AntiDeleteMsg.messageIsDeleted(id, dialog_id)) {
+                            if (AntiDeleteMsg.messageIsDeleted(id)) {
                                 deleted = "(recalled) ";
                             }
                             String delta = deleted + " ";
@@ -182,14 +171,10 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                                         else
                                         {
                                             if (item.getClass().equals(TL_updateDeleteChannelMessages))
-                                            {
-                                                deletedMessages.addAll(new TLRPC.TL_updateDeleteChannelMessages(item).getMessages());
-                                            }
+                                                AntiDeleteMsg.insertDeletedMessage(new TLRPC.TL_updateDeleteChannelMessages(item).getMessages());
 
                                             if (item.getClass().equals(TL_updateDeleteMessages))
-                                            {
-                                                deletedMessages.addAll(new TLRPC.TL_updateDeleteMessages(item).getMessages());
-                                            }
+                                                AntiDeleteMsg.insertDeletedMessage(new TLRPC.TL_updateDeleteMessages(item).getMessages());
 
                                             if (DEBUG_MODE)
                                                 XposedBridge.log("[TGAR] Protected message! event: " + item.getClass());

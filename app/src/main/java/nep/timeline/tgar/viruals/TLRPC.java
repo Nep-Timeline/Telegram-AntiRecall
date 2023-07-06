@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import de.robv.android.xposed.XposedBridge;
 import nep.timeline.tgar.Utils;
+import nep.timeline.tgar.obfuscate.AutomationResolver;
 import nep.timeline.tgar.utils.FieldUtils;
 
 public class TLRPC {
@@ -29,25 +30,38 @@ public class TLRPC {
 
     public static class Peer {
         private final Object instance;
+        private final Class<?> clazz;
 
         public Peer(Object instance)
         {
             this.instance = instance;
+            if (!instance.getClass().getName().equals(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$Peer")))
+            {
+                Class<?> clazz = instance.getClass().getSuperclass();
+                if (!clazz.getName().equals(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$Peer")))
+                    this.clazz = clazz.getSuperclass();
+                else
+                    this.clazz = clazz;
+            }
+            else
+            {
+                this.clazz = instance.getClass();
+            }
         }
 
         public long getUserID()
         {
-            return FieldUtils.getFieldLongOfClass(this.instance, "user_id");
+            return FieldUtils.getFieldLongOfClass(this.instance, this.clazz, "user_id");
         }
 
         public long getChatID()
         {
-            return FieldUtils.getFieldLongOfClass(this.instance, "chat_id");
+            return FieldUtils.getFieldLongOfClass(this.instance, this.clazz, "chat_id");
         }
 
         public long getChannelID()
         {
-            return FieldUtils.getFieldLongOfClass(this.instance, "channel_id");
+            return FieldUtils.getFieldLongOfClass(this.instance, this.clazz, "channel_id");
         }
     }
 
@@ -58,49 +72,28 @@ public class TLRPC {
         public Message(Object instance)
         {
             this.instance = instance;
-            Class<?> clazz = instance.getClass().getSuperclass();
-            if (!clazz.getName().equals("YL0"))
-                this.clazz = clazz.getSuperclass();
+            if (!instance.getClass().getName().equals(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$Message")))
+            {
+                Class<?> clazz = instance.getClass().getSuperclass();
+                if (!clazz.getName().equals(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$Message")))
+                    this.clazz = clazz.getSuperclass();
+                else
+                    this.clazz = clazz;
+            }
             else
-                this.clazz = clazz;
+            {
+                this.clazz = instance.getClass();
+            }
         }
 
         public int getID()
         {
-            try
-            {
-                Field field = this.clazz.getDeclaredField("id");
-
-                if (!field.isAccessible())
-                    field.setAccessible(true);
-
-                return field.getInt(this.instance);
-            }
-            catch (Exception e)
-            {
-                XposedBridge.log(e);
-                e.printStackTrace();
-                return Integer.MIN_VALUE;
-            }
+            return FieldUtils.getFieldIntOfClass(this.instance, this.clazz, "id");
         }
 
         public Peer getPeerID()
         {
-            try
-            {
-                Field field = this.clazz.getDeclaredField("peer_id");
-
-                if (!field.isAccessible())
-                    field.setAccessible(true);
-
-                return new Peer(field.get(this.instance));
-            }
-            catch (Exception e)
-            {
-                XposedBridge.log(e);
-                e.printStackTrace();
-                return null;
-            }
+            return new Peer(FieldUtils.getFieldClassOfClass(this.instance, this.clazz, "peer_id"));
         }
     }
 

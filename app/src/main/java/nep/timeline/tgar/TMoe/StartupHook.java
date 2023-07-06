@@ -7,9 +7,6 @@ import de.robv.android.xposed.XposedHelpers;
 public class StartupHook {
     public static final StartupHook INSTANCE = new StartupHook();
 
-    private StartupHook() {
-    }
-
     private boolean initialized = false;
 
     public void doInit(ClassLoader rtLoader) {

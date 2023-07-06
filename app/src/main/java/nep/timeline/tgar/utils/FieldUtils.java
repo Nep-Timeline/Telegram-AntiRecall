@@ -6,10 +6,10 @@ import java.lang.reflect.Modifier;
 import de.robv.android.xposed.XposedBridge;
 
 public class FieldUtils {
-    public static Field getFieldOfClass(Object classs, String fieldName) {
+    public static Field getFieldOfClass(Object clazz, String fieldName) {
         try
         {
-            Field field = classs.getClass().getDeclaredField(fieldName);
+            Field field = clazz.getClass().getDeclaredField(fieldName);
 
             if (!field.isAccessible())
                 field.setAccessible(true);
@@ -18,6 +18,7 @@ public class FieldUtils {
         }
         catch (NoSuchFieldException e)
         {
+            XposedBridge.log(e);
             e.printStackTrace();
             return null;
         }
@@ -35,8 +36,9 @@ public class FieldUtils {
         }
         catch (Exception e)
         {
+            XposedBridge.log(e);
             e.printStackTrace();
-            return Integer.MIN_VALUE;
+            return Double.MIN_VALUE;
         }
     }
 
@@ -52,8 +54,9 @@ public class FieldUtils {
         }
         catch (Exception e)
         {
+            XposedBridge.log(e);
             e.printStackTrace();
-            return Integer.MIN_VALUE;
+            return Double.MIN_VALUE;
         }
     }
 
@@ -69,8 +72,9 @@ public class FieldUtils {
         }
         catch (Exception e)
         {
+            XposedBridge.log(e);
             e.printStackTrace();
-            return Integer.MIN_VALUE;
+            return Float.MIN_VALUE;
         }
     }
 
@@ -86,8 +90,9 @@ public class FieldUtils {
         }
         catch (Exception e)
         {
+            XposedBridge.log(e);
             e.printStackTrace();
-            return Integer.MIN_VALUE;
+            return Float.MIN_VALUE;
         }
     }
 
@@ -103,6 +108,25 @@ public class FieldUtils {
         }
         catch (Exception e)
         {
+            XposedBridge.log(e);
+            e.printStackTrace();
+            return Integer.MIN_VALUE;
+        }
+    }
+
+    public static int getFieldIntOfClass(Object instance, Class<?> clazz, String fieldName) {
+        try
+        {
+            Field field = clazz.getDeclaredField(fieldName);
+
+            if (!field.isAccessible())
+                field.setAccessible(true);
+
+            return field.getInt(instance);
+        }
+        catch (Exception e)
+        {
+            XposedBridge.log(e);
             e.printStackTrace();
             return Integer.MIN_VALUE;
         }
@@ -120,8 +144,27 @@ public class FieldUtils {
         }
         catch (Exception e)
         {
+            XposedBridge.log(e);
             e.printStackTrace();
-            return Integer.MIN_VALUE;
+            return Long.MIN_VALUE;
+        }
+    }
+
+    public static long getFieldLongOfClass(Object instance, Class<?> clazz, String fieldName) {
+        try
+        {
+            Field field = clazz.getDeclaredField(fieldName);
+
+            if (!field.isAccessible())
+                field.setAccessible(true);
+
+            return field.getLong(instance);
+        }
+        catch (Exception e)
+        {
+            XposedBridge.log(e);
+            e.printStackTrace();
+            return Long.MIN_VALUE;
         }
     }
 
@@ -137,6 +180,25 @@ public class FieldUtils {
         }
         catch (Exception e)
         {
+            XposedBridge.log(e);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Object getFieldClassOfClass(Object instance, Class<?> clazz, String fieldName) {
+        try
+        {
+            Field field = clazz.getDeclaredField(fieldName);
+
+            if (!field.isAccessible())
+                field.setAccessible(true);
+
+            return field.get(instance);
+        }
+        catch (Exception e)
+        {
+            XposedBridge.log(e);
             e.printStackTrace();
             return null;
         }
