@@ -95,6 +95,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                             TLRPC.Peer peerID = owner.getPeerID();
                             long dialog_id = peerID.getChannelID();
                             int id = owner.getID();
+                            XposedBridge.log(peerID.getChatID() + "");
                             String deleted = "";
                             if (AntiDeleteMsg.messageIsDeleted(id, dialog_id) || deletedMessages.contains(id)) {
                                 deleted = "(recalled) ";

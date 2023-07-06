@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.robv.android.xposed.XposedBridge;
+import nep.timeline.tgar.TMoe.Initiator;
 import nep.timeline.tgar.Utils;
 import nep.timeline.tgar.obfuscate.AutomationResolver;
 import nep.timeline.tgar.utils.FieldUtils;
@@ -31,16 +32,16 @@ public class MessageObject {
     {
         List<Field> fields = new ArrayList<>();
         for (Field declaredField : this.instance.getClass().getDeclaredFields())
-            if (declaredField.getName().contains(AutomationResolver.resolve("MessageObject", "messageOwner", AutomationResolver.ResolverType.Field)))
+            if (declaredField.getName().equals(AutomationResolver.resolve("MessageObject", "messageOwner", AutomationResolver.ResolverType.Field)))
                 fields.add(declaredField);
 
         if (!fields.isEmpty()) {
             try
             {
                 Field messageOwnerField = null;
-                Class<?> TL_updateDeleteMessages = Utils.globalLoadPackageParam.classLoader.loadClass(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$Message"));
+                //Class<?> TL_updateDeleteMessages = Initiator.loadClass(AutomationResolver.resolve("org.telegram.tgnet.TLRPC$Message"));
                 for (Field field : fields) {
-                    if (field.getType().equals(TL_updateDeleteMessages))
+                    if (field.getType().getName().equals("YL0"))
                     {
                         messageOwnerField = field;
                     }
@@ -50,7 +51,7 @@ public class MessageObject {
                 else
                     XposedBridge.log("[TGAR Error] Not found messageOwner field in MessageObject's fields, " + Utils.issue);
             }
-            catch (IllegalAccessException | ClassNotFoundException e)
+            catch (IllegalAccessException  e)
             {
                 e.printStackTrace();
             }

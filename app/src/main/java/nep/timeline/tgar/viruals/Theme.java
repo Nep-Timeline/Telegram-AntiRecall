@@ -10,7 +10,6 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import nep.timeline.tgar.Utils;
 import nep.timeline.tgar.obfuscate.AutomationResolver;
-import nep.timeline.tgar.utils.FieldUtils;
 
 public class Theme {
     private final Object instance;

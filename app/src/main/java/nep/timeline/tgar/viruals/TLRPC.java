@@ -1,7 +1,9 @@
 package nep.timeline.tgar.viruals;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import de.robv.android.xposed.XposedBridge;
 import nep.timeline.tgar.Utils;
 import nep.timeline.tgar.utils.FieldUtils;
 
@@ -51,20 +53,54 @@ public class TLRPC {
 
     public static class Message {
         private final Object instance;
+        private final Class<?> clazz;
 
         public Message(Object instance)
         {
             this.instance = instance;
+            Class<?> clazz = instance.getClass().getSuperclass();
+            if (!clazz.getName().equals("YL0"))
+                this.clazz = clazz.getSuperclass();
+            else
+                this.clazz = clazz;
         }
 
         public int getID()
         {
-            return FieldUtils.getFieldIntOfClass(this.instance, "id");
+            try
+            {
+                Field field = this.clazz.getDeclaredField("id");
+
+                if (!field.isAccessible())
+                    field.setAccessible(true);
+
+                return field.getInt(this.instance);
+            }
+            catch (Exception e)
+            {
+                XposedBridge.log(e);
+                e.printStackTrace();
+                return Integer.MIN_VALUE;
+            }
         }
 
         public Peer getPeerID()
         {
-            return new Peer(FieldUtils.getFieldClassOfClass(this.instance, "peer_id"));
+            try
+            {
+                Field field = this.clazz.getDeclaredField("peer_id");
+
+                if (!field.isAccessible())
+                    field.setAccessible(true);
+
+                return new Peer(field.get(this.instance));
+            }
+            catch (Exception e)
+            {
+                XposedBridge.log(e);
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 

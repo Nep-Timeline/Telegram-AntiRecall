@@ -3,6 +3,8 @@ package nep.timeline.tgar.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import de.robv.android.xposed.XposedBridge;
+
 public class FieldUtils {
     public static Field getFieldOfClass(Object classs, String fieldName) {
         try
