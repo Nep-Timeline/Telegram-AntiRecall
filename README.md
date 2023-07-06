@@ -1,5 +1,6 @@
 # Telegram AntiRecall
 anti recall xposed module for telegram app
+
 [![Release](https://img.shields.io/github/release/Sakion-Team/Telegram-AntiRecall.svg)](https://github.com/Sakion-Team/Telegram-AntiRecall/releases/latest)
 [![CI_Build](https://github.com/Sakion-Team/Telegram-AntiRecall/actions/workflows/android.yml/badge.svg)](https://github.com/Sakion-Team/Telegram-AntiRecall/actions/workflows/android.yml)
 
