@@ -20,11 +20,12 @@ public class Theme {
         this.instance = instance;
     }
 
-    private TextPaint getTextPaintCore()
+    public static TextPaint getTextPaint()
     {
+        Class<?> theme = XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.ui.ActionBar.Theme"), Utils.globalLoadPackageParam.classLoader);
         List<Field> fields = new ArrayList<>();
-        for (Field declaredField : this.instance.getClass().getDeclaredFields())
-            if (declaredField.getName().contains(AutomationResolver.resolve("Theme", "chat_timePaint", AutomationResolver.ResolverType.Field)))
+        for (Field declaredField : theme.getDeclaredFields())
+            if (declaredField.getName().equals(AutomationResolver.resolve("Theme", "chat_timePaint", AutomationResolver.ResolverType.Field)))
                 fields.add(declaredField);
 
         if (!fields.isEmpty()) {
@@ -38,7 +39,7 @@ public class Theme {
                     }
                 }
                 if (textPaintField != null)
-                    return (TextPaint) textPaintField.get(this.instance);
+                    return (TextPaint) textPaintField.get(null);
                 else
                     XposedBridge.log("[TGAR Error] Not found chat_timePaint field in Theme, " + Utils.issue);
             }
@@ -47,12 +48,9 @@ public class Theme {
                 e.printStackTrace();
             }
         }
-        return null;
-    }
+        else
+            XposedBridge.log("[TGAR Error] Not found chat_timePaint field in Theme, " + Utils.issue);
 
-    public static TextPaint getTextPaint()
-    {
-        Class<?> theme = XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.ui.ActionBar.Theme"), Utils.globalLoadPackageParam.classLoader);
-        return new Theme(theme).getTextPaintCore();
+        return null;
     }
 }

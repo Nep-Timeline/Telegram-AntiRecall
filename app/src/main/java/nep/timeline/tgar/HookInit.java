@@ -44,6 +44,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
     private static String MODULE_PATH = null;
     private static final boolean DEBUG_MODE = true;
     private static final boolean ONLY_ANTIRECALL = false;
+    public static final List<Integer> deletedMessages = new ArrayList<>();
 
     public final List<String> getHookPackages()
     {
@@ -95,7 +96,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                             long dialog_id = peerID.getChannelID();
                             int id = owner.getID();
                             String deleted = "";
-                            if (AntiDeleteMsg.messageIsDeleted(id, dialog_id)) {
+                            if (AntiDeleteMsg.messageIsDeleted(id, dialog_id) || deletedMessages.contains(id)) {
                                 deleted = "(recalled) ";
                             }
                             String delta = deleted + " ";
@@ -179,6 +180,16 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                                             newUpdates.add(item);
                                         else
                                         {
+                                            if (item.getClass().equals(TL_updateDeleteChannelMessages))
+                                            {
+                                                deletedMessages.addAll(new TLRPC.TL_updateDeleteChannelMessages(item).getMessages());
+                                            }
+
+                                            if (item.getClass().equals(TL_updateDeleteMessages))
+                                            {
+                                                deletedMessages.addAll(new TLRPC.TL_updateDeleteMessages(item).getMessages());
+                                            }
+
                                             if (DEBUG_MODE)
                                                 XposedBridge.log("[TGAR] Protected message! event: " + item.getClass());
                                         }

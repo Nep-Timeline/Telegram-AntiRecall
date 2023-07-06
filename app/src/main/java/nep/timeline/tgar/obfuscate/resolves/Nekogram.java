@@ -18,10 +18,12 @@ public class Nekogram {
         classList.add(new ClassInfo("org.telegram.messenger.MessagesStorage", "yf0"));
         classList.add(new ClassInfo("org.telegram.messenger.MessageObject", "bc0"));
         classList.add(new ClassInfo("org.telegram.messenger.UserConfig", "sm1"));
+        classList.add(new ClassInfo("org.telegram.tgnet.TLRPC$Message", "YL0"));
         classList.add(new ClassInfo("org.telegram.tgnet.TLRPC$TL_updateDeleteMessages", "Ja1"));
         classList.add(new ClassInfo("org.telegram.tgnet.TLRPC$TL_updateDeleteChannelMessages", "Ia1"));
         classList.add(new ClassInfo("org.telegram.ui.Cells.ChatMessageCell", "org.telegram.ui.Cells.r"));
         classList.add(new ClassInfo("org.telegram.ui.ActionBar.Theme", "gh1"));
+        fieldList.add(new FieldInfo("MessageObject", "messageOwner", "a"));
         fieldList.add(new FieldInfo("UserConfig", "selectedAccount", "o"));
         fieldList.add(new FieldInfo("Theme", "chat_timePaint", "J"));
         fieldList.add(new FieldInfo("NotificationCenter", "messagesDeleted", "i"));
