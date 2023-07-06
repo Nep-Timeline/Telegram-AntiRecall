@@ -19,10 +19,6 @@ public class HostInfo {
     private static String sHostAppVersionName = null;
     private static String sHostAppName = null;
 
-    private HostInfo() {
-        throw new AssertionError("No instance for you!");
-    }
-
     public static void setHostApplication(@NonNull Application app) {
         Objects.requireNonNull(app, "app");
         sHostApplication = app;

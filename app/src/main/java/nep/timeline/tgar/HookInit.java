@@ -18,6 +18,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import nep.timeline.tgar.TMoe.HostInfo;
 import nep.timeline.tgar.TMoe.StartupHook;
 import nep.timeline.tgar.obfuscate.AutomationResolver;
 import nep.timeline.tgar.viruals.MessageObject;
@@ -80,6 +81,10 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                 HookUtils.findAndHookMethod(chatMessageCell, AutomationResolver.resolve("ChatMessageCell", "measureTime", AutomationResolver.ResolverType.Method), new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        String recalled = "recalled";
+                        if (HostInfo.getApplication().getResources().getConfiguration().locale.getDisplayLanguage().equals("\u4e2d\u6587"))
+                            recalled = "\u5df2\u64a4\u56de";
+
                         if (ClientChecker.isNekogram())
                         {
                             NekoChatMessageCell cell = new NekoChatMessageCell(param.thisObject);
@@ -88,9 +93,8 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                             TLRPC.Message owner = messageObject.getMessageOwner();
                             int id = owner.getID();
                             String deleted = "";
-                            if (AntiDeleteMsg.messageIsDeleted(id)) {
-                                deleted = "(recalled) ";
-                            }
+                            if (AntiDeleteMsg.messageIsDeleted(id))
+                                deleted = "(" + recalled + ") ";
                             String delta = deleted + " ";
                             SpannableStringBuilder newDelta = new SpannableStringBuilder();
                             newDelta.append(delta).append(time);
@@ -112,9 +116,8 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                             TLRPC.Message owner = messageObject.getMessageOwner();
                             int id = owner.getID();
                             String deleted = "";
-                            if (AntiDeleteMsg.messageIsDeleted(id)) {
-                                deleted = "(recalled) ";
-                            }
+                            if (AntiDeleteMsg.messageIsDeleted(id))
+                                deleted = "(" + recalled + ") ";
                             String delta = deleted + " ";
                             time = delta + time;
                             cell.setCurrentTimeString(time);
