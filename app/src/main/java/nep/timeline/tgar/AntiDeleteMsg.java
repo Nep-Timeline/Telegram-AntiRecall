@@ -115,7 +115,6 @@ public class AntiDeleteMsg {
                 }
             });
         }
-        */
 
         ArrayList<Method> updateDialogsWithDeletedMessagesMethods = new ArrayList<>();
         for (Method method : messagesStorage.getDeclaredMethods()) {
@@ -141,6 +140,7 @@ public class AntiDeleteMsg {
                 }
             });
         }
+        */
 
         XposedBridge.hookMethod(postNotificationName, new XC_MethodHook() {
             @Override
