@@ -18,8 +18,8 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import nep.timeline.tgar.TMoe.HostInfo;
-import nep.timeline.tgar.TMoe.StartupHook;
+import nep.timeline.tgar.application.ApplicationInfo;
+import nep.timeline.tgar.application.ApplicationLoaderHook;
 import nep.timeline.tgar.obfuscate.AutomationResolver;
 import nep.timeline.tgar.viruals.MessageObject;
 import nep.timeline.tgar.viruals.OfficialChatMessageCell;
@@ -59,7 +59,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             if (DEBUG_MODE)
                 XposedBridge.log("[TGAR] Trying to hook app: " + lpparam.packageName);
             Utils.globalLoadPackageParam = lpparam;
-            StartupHook.INSTANCE.doInit(lpparam.classLoader);
+            ApplicationLoaderHook.init(lpparam.classLoader);
 
             Class<?> chatMessageCell = XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.ui.Cells.ChatMessageCell"), lpparam.classLoader);
 
@@ -68,7 +68,7 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                         String recalled = "recalled";
-                        switch (HostInfo.getApplication().getResources().getConfiguration().locale.getDisplayLanguage())
+                        switch (ApplicationInfo.getApplication().getResources().getConfiguration().locale.getDisplayLanguage())
                         {
                             case "\u65e5\u672c\u8a9e":
                             case "\u4e2d\u6587":
