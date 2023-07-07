@@ -82,8 +82,13 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                         String recalled = "recalled";
-                        if (HostInfo.getApplication().getResources().getConfiguration().locale.getDisplayLanguage().equals("\u4e2d\u6587"))
-                            recalled = "\u5df2\u64a4\u56de";
+                        switch (HostInfo.getApplication().getResources().getConfiguration().locale.getDisplayLanguage())
+                        {
+                            case "\u65e5\u672c\u8a9e":
+                            case "\u4e2d\u6587":
+                                recalled = "\u5df2\u64a4\u56de";
+                                break;
+                        }
 
                         if (ClientChecker.isNekogram())
                         {
