@@ -5,9 +5,10 @@ import android.app.Application;
 import java.io.File;
 
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import nep.timeline.re_telegram.Utils;
-import nep.timeline.re_telegram.obfuscate.AutomationResolver;
+import nep.timeline.tgar.Utils;
+import nep.timeline.tgar.obfuscate.AutomationResolver;
 
 public class ApplicationLoaderHook {
     private static boolean initialized = false;
@@ -21,7 +22,7 @@ public class ApplicationLoaderHook {
         if (applicationClass == null)
             applicationClass = XposedHelpers.findClassIfExists("org.thunderdog.challegram.BaseApplication", loader);
         if (applicationClass == null) {
-            Utils.log("Not found ApplicationLoader, " + Utils.issue);
+            XposedBridge.log("Not found ApplicationLoader, " + Utils.issue);
             return;
         }
         XposedHelpers.findAndHookMethod(applicationClass, AutomationResolver.resolve("ApplicationLoader", "onCreate", AutomationResolver.ResolverType.Method), new XC_MethodHook(51) {
@@ -30,7 +31,7 @@ public class ApplicationLoaderHook {
                 Application app = (Application) param.thisObject;
                 if (app == null)
                 {
-                    Utils.log("ApplicationLoader is wrong, " + Utils.issue);
+                    XposedBridge.log("ApplicationLoader is wrong, " + Utils.issue);
                     return;
                 }
 
