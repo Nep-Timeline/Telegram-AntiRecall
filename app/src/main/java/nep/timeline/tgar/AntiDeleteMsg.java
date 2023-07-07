@@ -9,16 +9,61 @@ import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import nep.timeline.tgar.obfuscate.AutomationResolver;
+import nep.timeline.tgar.structs.DeletedMessageInfo;
+import nep.timeline.tgar.viruals.UserConfig;
 
 public class AntiDeleteMsg {
-    private static final List<Integer> deletedMessagesIds = new ArrayList<>();
+    private static final List<DeletedMessageInfo> deletedMessagesIds = new ArrayList<>();
+
+    public static List<DeletedMessageInfo> getDeletedMessagesIds() {
+        return deletedMessagesIds;
+    }
 
     public static boolean messageIsDeleted(int messageId) {
-        return deletedMessagesIds.contains(messageId);
+        boolean deleted = false;
+        for (DeletedMessageInfo deletedMessagesId : deletedMessagesIds) {
+            if (deletedMessagesId.getSelectedAccount() == UserConfig.getSelectedAccount() && deletedMessagesId.getMessageIds().contains(messageId))
+            {
+                deleted = true;
+                break;
+            }
+        }
+        return deleted; // deletedMessagesIds.contains(messageId);
     }
 
     public static void insertDeletedMessage(ArrayList<Integer> messageIds) {
-        deletedMessagesIds.addAll(messageIds);
+        boolean needInit = true;
+        DeletedMessageInfo info = null;
+        for (DeletedMessageInfo deletedMessagesId : deletedMessagesIds) {
+            if (deletedMessagesId.getSelectedAccount() == UserConfig.getSelectedAccount())
+            {
+                info = deletedMessagesId;
+                needInit = false;
+                break;
+            }
+        }
+        if (needInit)
+            deletedMessagesIds.add(new DeletedMessageInfo(UserConfig.getSelectedAccount(), messageIds));
+        else
+            info.insertMessageIds(messageIds);
+        Utils.saveDeletedMessages();
+    }
+
+    public static void insertDeletedMessageFromSaveFile(int selectedAccount, ArrayList<Integer> messageIds) {
+        boolean needInit = true;
+        DeletedMessageInfo info = null;
+        for (DeletedMessageInfo deletedMessagesId : deletedMessagesIds) {
+            if (deletedMessagesId.getSelectedAccount() == selectedAccount)
+            {
+                info = deletedMessagesId;
+                needInit = false;
+                break;
+            }
+        }
+        if (needInit)
+            deletedMessagesIds.add(new DeletedMessageInfo(selectedAccount, messageIds));
+        else
+            info.insertMessageIds(messageIds);
     }
 
     public static void init() throws ClassNotFoundException, NoSuchMethodException {

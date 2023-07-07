@@ -4,6 +4,7 @@ import android.content.res.XModuleResources;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;

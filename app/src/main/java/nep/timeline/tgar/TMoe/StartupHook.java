@@ -3,6 +3,7 @@ package nep.timeline.tgar.TMoe;
 import android.app.Application;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
+import nep.timeline.tgar.obfuscate.AutomationResolver;
 
 public class StartupHook {
     public static final StartupHook INSTANCE = new StartupHook();
@@ -18,14 +19,8 @@ public class StartupHook {
         }
         Class<?> applicationClass = null;
         try {
-            applicationClass = rtLoader.loadClass("org.telegram.messenger.ApplicationLoader");
+            applicationClass = rtLoader.loadClass(AutomationResolver.resolve("org.telegram.messenger.ApplicationLoader"));
         } catch (ClassNotFoundException ignored) {
-        }
-        if (applicationClass == null) {
-            try {
-                applicationClass = rtLoader.loadClass("org.telegram.messenger.ApplicationLoaderImpl");
-            } catch (ClassNotFoundException ignored) {
-            }
         }
         if (applicationClass == null) {
             try {
@@ -36,7 +31,7 @@ public class StartupHook {
         if (applicationClass == null) {
             throw new AssertionError("StartupHook.doInit: unable to find ApplicationLoader");
         }
-        XposedHelpers.findAndHookMethod(applicationClass, "onCreate", new XC_MethodHook(51) {
+        XposedHelpers.findAndHookMethod(applicationClass, AutomationResolver.resolve("ApplicationLoader", "onCreate", AutomationResolver.ResolverType.Method), new XC_MethodHook(51) {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
                 Application app = (Application) param.thisObject;

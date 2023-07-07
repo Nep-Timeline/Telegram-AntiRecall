@@ -9,6 +9,6 @@ public class UserConfig {
     public static int getSelectedAccount() {
         Class<?> userConfig = XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.messenger.UserConfig"), Utils.globalLoadPackageParam.classLoader);
         String selectedAccountField = AutomationResolver.resolve("UserConfig", "selectedAccount", AutomationResolver.ResolverType.Field);
-        return FieldUtils.getFieldIntOfClass(userConfig, null, selectedAccountField);
+        return FieldUtils.getFieldIntOfClass(null, userConfig, selectedAccountField);
     }
 }

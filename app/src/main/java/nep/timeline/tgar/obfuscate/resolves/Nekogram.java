@@ -13,6 +13,7 @@ public class Nekogram {
     private static final List<MethodInfo> methodList = new ArrayList<>();
 
     static {
+        classList.add(new ClassInfo("org.telegram.messenger.ApplicationLoader", "org.telegram.messenger.ApplicationLoaderImpl"));
         classList.add(new ClassInfo("org.telegram.messenger.NotificationsController", "Uj0"));
         classList.add(new ClassInfo("org.telegram.messenger.NotificationCenter", "ui0"));
         classList.add(new ClassInfo("org.telegram.messenger.MessagesStorage", "yf0"));
@@ -28,6 +29,7 @@ public class Nekogram {
         fieldList.add(new FieldInfo("UserConfig", "selectedAccount", "o"));
         fieldList.add(new FieldInfo("Theme", "chat_timePaint", "J"));
         fieldList.add(new FieldInfo("NotificationCenter", "messagesDeleted", "i"));
+        methodList.add(new MethodInfo("ApplicationLoader", "onCreate", "n"));
         methodList.add(new MethodInfo("NotificationsController", "removeNotificationsForDialog", "E"));
         methodList.add(new MethodInfo("NotificationCenter", "postNotificationName", "i"));
         methodList.add(new MethodInfo("MessagesStorage", "markMessagesAsDeleted", "z0"));
