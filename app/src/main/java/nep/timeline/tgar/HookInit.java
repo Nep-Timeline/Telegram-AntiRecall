@@ -4,7 +4,6 @@ import android.content.res.XModuleResources;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +13,7 @@ import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
+
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
@@ -35,20 +34,11 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
             "com.exteragram.messenger",
             "org.forkclient.messenger",
             "org.forkclient.messenger.beta",
-            "uz.unnarsx.cherrygram");
-    private static final List<String> hookPackagesCustomization = Arrays.asList("xyz.nextalone.nagram", "xyz.nextalone.nnngram",
+            "uz.unnarsx.cherrygram",
+            "xyz.nextalone.nagram", "xyz.nextalone.nnngram",
             "nekox.messenger");
     private static String MODULE_PATH = null;
     private static final boolean DEBUG_MODE = true;
-    private static final boolean ONLY_ANTIRECALL = false;
-
-    public final List<String> getHookPackages()
-    {
-        List<String> hookPackagesLocal = new ArrayList<>(hookPackages);
-        List<String> hookPackagesCustomizationLocal = new ArrayList<>(hookPackagesCustomization);
-        hookPackagesLocal.addAll(hookPackagesCustomizationLocal);
-        return hookPackagesLocal;
-    }
 
     @Override
     public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) throws Throwable {
@@ -57,20 +47,15 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
 
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
-        if (!getHookPackages().contains(resparam.packageName))
+        if (!hookPackages.contains(resparam.packageName))
             return;
 
         XModuleResources.createInstance(MODULE_PATH, resparam.res);
     }
 
-    private boolean onlyNeedAR(final XC_LoadPackage.LoadPackageParam lpparam)
-    {
-        return hookPackagesCustomization.contains(lpparam.packageName);
-    }
-
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        if (getHookPackages().contains(lpparam.packageName)) {
+        if (hookPackages.contains(lpparam.packageName)) {
             if (DEBUG_MODE)
                 XposedBridge.log("[TGAR] Trying to hook app: " + lpparam.packageName);
             Utils.globalLoadPackageParam = lpparam;
@@ -193,33 +178,6 @@ public class HookInit implements IXposedHookLoadPackage, IXposedHookZygoteInit, 
                                 }
                             }
                         });
-                    }
-                }
-
-                if (!onlyNeedAR(lpparam) && !ONLY_ANTIRECALL)
-                {
-                    // No Sponsored Messages
-                    if (!ClientChecker.isCherrygram())
-                    {
-                        String getSponsoredMessagesMethod = AutomationResolver.resolve("MessagesController", "getSponsoredMessages", AutomationResolver.ResolverType.Method);
-                        XposedHelpers.findAndHookMethod(messagesController, getSponsoredMessagesMethod, long.class, XC_MethodReplacement.returnConstant(null));
-                    }
-
-                    // Anti AntiForward
-                    {
-                        String isChatNoForwardsMethod = AutomationResolver.resolve("MessagesController", "isChatNoForwards", AutomationResolver.ResolverType.Method);
-                        HookUtils.findAndHookAllMethod(messagesController, isChatNoForwardsMethod, XC_MethodReplacement.returnConstant(false));
-
-                        Class<?> messageObject = XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.messenger.MessageObject"), lpparam.classLoader);
-                        if (messageObject != null)
-                        {
-                            String canForwardMessageMethod = AutomationResolver.resolve("MessageObject", "canForwardMessage", AutomationResolver.ResolverType.Method);
-                            XposedHelpers.findAndHookMethod(messageObject, canForwardMessageMethod, XC_MethodReplacement.returnConstant(false));
-                        }
-                        else
-                        {
-                            XposedBridge.log("[TGAR Error] Not found MessageObject, " + Utils.issue);
-                        }
                     }
                 }
             }

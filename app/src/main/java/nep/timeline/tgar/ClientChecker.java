@@ -8,18 +8,8 @@ public class ClientChecker {
         return lpparam.packageName.equals("tw.nekomimi.nekogram");
     }
 
-    public static boolean isCherrygram(final XC_LoadPackage.LoadPackageParam lpparam)
-    {
-        return lpparam.packageName.equals("uz.unnarsx.cherrygram");
-    }
-
     public static boolean isNekogram()
     {
         return isNekogram(Utils.globalLoadPackageParam);
-    }
-
-    public static boolean isCherrygram()
-    {
-        return isCherrygram(Utils.globalLoadPackageParam);
     }
 }
