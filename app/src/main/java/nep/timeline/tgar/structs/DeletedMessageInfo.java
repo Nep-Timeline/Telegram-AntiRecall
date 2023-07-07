@@ -24,4 +24,8 @@ public class DeletedMessageInfo {
     public void insertMessageIds(ArrayList<Integer> messageIds) {
         this.messageIds.addAll(messageIds);
     }
+
+    public void insertMessageId(Integer messageId) {
+        this.messageIds.add(messageId);
+    }
 }

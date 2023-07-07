@@ -45,7 +45,11 @@ public class AntiDeleteMsg {
         if (needInit)
             deletedMessagesIds.add(new DeletedMessageInfo(UserConfig.getSelectedAccount(), messageIds));
         else
-            info.insertMessageIds(messageIds);
+        {
+            for (Integer messageId : messageIds)
+                if (!info.getMessageIds().contains(messageId)) // No duplication
+                    info.insertMessageIds(messageIds);
+        }
         Utils.saveDeletedMessages();
     }
 
@@ -63,7 +67,11 @@ public class AntiDeleteMsg {
         if (needInit)
             deletedMessagesIds.add(new DeletedMessageInfo(selectedAccount, messageIds));
         else
-            info.insertMessageIds(messageIds);
+        {
+            for (Integer messageId : messageIds)
+                if (!info.getMessageIds().contains(messageId))
+                    info.insertMessageIds(messageIds);
+        }
     }
 
     public static void init() throws ClassNotFoundException, NoSuchMethodException {
@@ -82,20 +90,56 @@ public class AntiDeleteMsg {
             }
         }
 
-        ArrayList<Method> methods = new ArrayList<>();
-        for (Method declaredMethod : messagesStorage.getDeclaredMethods()) {
-            if (declaredMethod.getName().equals(AutomationResolver.resolve("MessagesStorage", "markMessagesAsDeleted", AutomationResolver.ResolverType.Method)) || declaredMethod.getName().equals(AutomationResolver.resolve("MessagesStorage", "updateDialogsWithDeletedMessages", AutomationResolver.ResolverType.Method))) {
-                methods.add(declaredMethod);
+        /*
+        ArrayList<Method> markMessagesAsDeletedMethods = new ArrayList<>();
+        for (Method method : messagesStorage.getDeclaredMethods()) {
+            if (method.getName().equals(AutomationResolver.resolve("MessagesStorage", "markMessagesAsDeleted", AutomationResolver.ResolverType.Method))) {
+                markMessagesAsDeletedMethods.add(method);
             }
         }
 
-        if (methods.isEmpty()) {
+        if (markMessagesAsDeletedMethods.isEmpty()) {
             XposedBridge.log("[TGAR Error] Failed to hook markMessagesAsDeleted! Reason: No method found, " + Utils.issue);
             return;
         }
 
-        for (Method method : methods) {
-            XposedBridge.hookMethod(method, XC_MethodReplacement.returnConstant(null));
+        for (Method markMessagesAsDeletedMethod : markMessagesAsDeletedMethods) {
+            XposedBridge.hookMethod(markMessagesAsDeletedMethod, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    param.setResult(null);
+                    if (param.args[1] instanceof ArrayList)
+                    {
+                        insertDeletedMessage(Utils.castList(param.args[1], Integer.class));
+                    }
+                }
+            });
+        }
+        */
+
+        ArrayList<Method> updateDialogsWithDeletedMessagesMethods = new ArrayList<>();
+        for (Method method : messagesStorage.getDeclaredMethods()) {
+            if (method.getName().equals(AutomationResolver.resolve("MessagesStorage", "updateDialogsWithDeletedMessages", AutomationResolver.ResolverType.Method))) {
+                updateDialogsWithDeletedMessagesMethods.add(method);
+            }
+        }
+
+        if (updateDialogsWithDeletedMessagesMethods.isEmpty()) {
+            XposedBridge.log("[TGAR Error] Failed to hook updateDialogsWithDeletedMessages! Reason: No method found, " + Utils.issue);
+            return;
+        }
+
+        for (Method updateDialogsWithDeletedMessagesMethod : updateDialogsWithDeletedMessagesMethods) {
+            XposedBridge.hookMethod(updateDialogsWithDeletedMessagesMethod, new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    param.setResult(null);
+                    if (param.args[2] instanceof ArrayList)
+                    {
+                        insertDeletedMessage(Utils.castList(param.args[2], Integer.class));
+                    }
+                }
+            });
         }
 
         XposedBridge.hookMethod(postNotificationName, new XC_MethodHook() {
