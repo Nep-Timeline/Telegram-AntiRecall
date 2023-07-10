@@ -1,4 +1,4 @@
-package nep.timeline.tgar.viruals;
+package nep.timeline.tgar.virtuals;
 
 import android.text.TextPaint;
 
@@ -12,13 +12,6 @@ import nep.timeline.tgar.Utils;
 import nep.timeline.tgar.obfuscate.AutomationResolver;
 
 public class Theme {
-    private final Object instance;
-
-    public Theme(Object instance)
-    {
-        this.instance = instance;
-    }
-
     public static TextPaint getTextPaint()
     {
         Class<?> theme = XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.ui.ActionBar.Theme"), Utils.globalLoadPackageParam.classLoader);
@@ -39,8 +32,18 @@ public class Theme {
                 }
                 if (textPaintField != null)
                     return (TextPaint) textPaintField.get(null);
-                else
-                    XposedBridge.log("[TGAR Error] Not found chat_timePaint field in Theme, " + Utils.issue);
+                else {
+                    for (Field field : fields) {
+                        if (field.getType().getName().contains("TextPaint"))
+                        {
+                            textPaintField = field;
+                        }
+                    }
+                    if (textPaintField != null)
+                        return (TextPaint) textPaintField.get(null);
+                    else
+                        XposedBridge.log("Not found chat_timePaint field in Theme, " + Utils.issue);
+                }
             }
             catch (IllegalAccessException e)
             {
@@ -48,7 +51,7 @@ public class Theme {
             }
         }
         else
-            XposedBridge.log("[TGAR Error] Not found chat_timePaint field in Theme, " + Utils.issue);
+            XposedBridge.log("Not found chat_timePaint field in Theme, " + Utils.issue);
 
         return null;
     }

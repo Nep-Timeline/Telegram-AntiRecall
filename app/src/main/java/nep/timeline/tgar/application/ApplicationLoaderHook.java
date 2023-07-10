@@ -20,6 +20,8 @@ public class ApplicationLoaderHook {
 
         Class<?> applicationClass = XposedHelpers.findClassIfExists(AutomationResolver.resolve("org.telegram.messenger.ApplicationLoader"), loader);
         if (applicationClass == null)
+            applicationClass = XposedHelpers.findClassIfExists("org.telegram.messenger.ApplicationLoaderImpl", loader);
+        if (applicationClass == null)
             applicationClass = XposedHelpers.findClassIfExists("org.thunderdog.challegram.BaseApplication", loader);
         if (applicationClass == null) {
             XposedBridge.log("Not found ApplicationLoader, " + Utils.issue);

@@ -1,4 +1,4 @@
-package nep.timeline.tgar.viruals;
+package nep.timeline.tgar.virtuals;
 
 import de.robv.android.xposed.XposedHelpers;
 import nep.timeline.tgar.Utils;

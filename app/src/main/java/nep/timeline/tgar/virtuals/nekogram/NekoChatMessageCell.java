@@ -1,11 +1,11 @@
-package nep.timeline.tgar.viruals.nekogram;
+package nep.timeline.tgar.virtuals.nekogram;
 
 import android.text.SpannableStringBuilder;
 
 import java.lang.reflect.Field;
 
 import nep.timeline.tgar.utils.FieldUtils;
-import nep.timeline.tgar.viruals.ChatMessageCellDefault;
+import nep.timeline.tgar.virtuals.ChatMessageCellDefault;
 
 public class NekoChatMessageCell extends ChatMessageCellDefault {
     public NekoChatMessageCell(Object instance) {

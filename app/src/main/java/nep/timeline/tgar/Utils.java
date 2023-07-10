@@ -52,7 +52,7 @@ public class Utils {
                     JsonArray jsonModule = entry.getValue().getAsJsonArray();
                     ArrayList<Integer> list = new ArrayList<>();
                     jsonModule.forEach(id -> list.add(id.getAsInt()));
-                    AntiDeleteMsg.insertDeletedMessageFromSaveFile(Integer.parseInt(entry.getKey().trim()), list);
+                    AntiRecall.insertDeletedMessageFromSaveFile(Integer.parseInt(entry.getKey().trim()), list);
                 });
             }
         }
@@ -69,7 +69,7 @@ public class Utils {
 
         JsonObject valueJsonObject = new JsonObject();
 
-        for (DeletedMessageInfo deletedMessageInfo : AntiDeleteMsg.getDeletedMessagesIds())
+        for (DeletedMessageInfo deletedMessageInfo : AntiRecall.getDeletedMessagesIds())
         {
             JsonArray jsonModule = new JsonArray();
             deletedMessageInfo.getMessageIds().forEach(jsonModule::add);
