@@ -258,7 +258,7 @@ public class AntiRecall {
                                 if (item.getClass().equals(TL_updateDeleteMessages))
                                     AntiRecall.insertNeedProcessDeletedMessage(new TLRPC.TL_updateDeleteMessages(item).getMessages());
 
-                                if (HookInit.DEBUG_MODE)
+                                if (HookInit.DEBUG_MODE && (item.getClass().equals(TL_updateDeleteMessages) || item.getClass().equals(TL_updateDeleteChannelMessages)))
                                     XposedBridge.log("Protected message! event: " + item.getClass());
                             }
 
